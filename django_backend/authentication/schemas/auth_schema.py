@@ -1,13 +1,11 @@
-from typing_extensions import TypedDict
-
-from djapy import Schema
+from djapy.schema import Form
 from pydantic import model_validator
 
 from generics.schemas import Inline
 from djapy_ext.exception import MessageValueError
 
 
-class LoginSchema(Schema):
+class LoginSchema(Form):
     username: str | None = None
     email: str | None = None
     password: str
