@@ -9,6 +9,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from djapy import djapify, SessionAuth
+from django.shortcuts import redirect
 
 from authentication.extras.tokenizer import Tokenizer
 from authentication.schemas.auth_schema import LoginSchema
@@ -85,12 +86,7 @@ def login_user(request, data: LoginSchema) -> {200: MessageOut, 400: Inline}:
         }
 
     login(request, user)
-
-    return {
-        "message": "User logged in successfully.",
-        "message_type": "success",
-        "alias": "login_success",
-    }
+    return redirect("/hey")
 
 
 @djapify(auth=SessionAuth)

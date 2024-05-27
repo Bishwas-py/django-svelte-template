@@ -1,0 +1,6 @@
+Django==5.0.6
+django-kit-fos==0.0.101
+djapy==0.1.100
+email_validator==2.1.1
+pillow==10.3.0
+pydantic==2.7.1
