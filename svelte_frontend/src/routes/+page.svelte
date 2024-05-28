@@ -1,12 +1,10 @@
 <script>
     import Error from "$items/Error.svelte";
-    import {enhance} from "$app/forms";
     import Form from "$items/Form.svelte";
     let loading = $state(false);
-
 </script>
 
-<Form action="?/login" method="post">
+<Form action="?/login" method="post" bind:loading>
     <div style="display: flex; flex-direction: column;">
         <label for="username">Username</label>
         <input type="text" name="username" placeholder="Username">
@@ -17,8 +15,13 @@
         <input type="password" name="password" placeholder="Password">
         <Error name="password"/>
     </div>
-    <input type="submit" value="login"/>
-    {loading}
+    <button type="submit" disabled={loading}>
+        {#if loading}
+            ......
+        {:else}
+            Login
+        {/if}
+    </button>
 </Form>
 
 <style>

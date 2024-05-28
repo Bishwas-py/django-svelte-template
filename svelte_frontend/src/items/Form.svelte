@@ -1,9 +1,10 @@
 <script lang="ts">
     import {enhance} from "$app/forms";
-    import type { Snippet } from 'svelte'
+    import type {Snippet} from 'svelte'
+
     interface Props {
         action: string;
-        sending?: boolean;
+        loading?: boolean;
         method?: string;
         className?: string;
         action_function?: (e: Event) => void;
@@ -15,16 +16,16 @@
         method = 'post',
         className = '',
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        sending = false,
+        loading = $bindable(),
         children,
     }: Props = $props();
 
     let action_function = () => {
-        sending = true;
+        loading = true;
         return ({update}) => {
             // Set invalidateAll to false if you don't want to reload page data when submitting
             update({invalidateAll: true}).finally(async () => {
-                sending = false;
+                loading = false;
             });
         };
     }

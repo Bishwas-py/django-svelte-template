@@ -27,6 +27,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@friendofsvelte/django-kit": "^0.0.1-alpha.2"
+		"@friendofsvelte/django-kit": "^0.0.1-dev.102"
 	}
 }

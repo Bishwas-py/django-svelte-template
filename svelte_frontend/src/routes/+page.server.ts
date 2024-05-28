@@ -1,3 +1,5 @@
 import {via_route_name} from '@friendofsvelte/django-kit';
 
-export const actions = via_route_name(['login'])
+export const actions = via_route_name(['login'], {
+    allow_cookies: true
+})
