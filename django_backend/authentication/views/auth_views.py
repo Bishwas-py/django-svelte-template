@@ -1,21 +1,13 @@
-import uuid
-from typing import Any
-
 from django.contrib.auth import get_user_model, login
-from django.contrib.sites.models import Site
 from django.db import IntegrityError
-from django.http import HttpResponse
-from django.views import View
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from djapy import djapify, SessionAuth
-from django.shortcuts import redirect
 
-from authentication.extras.tokenizer import Tokenizer
 from authentication.schemas.auth_schema import LoginSchema
 from authentication.models import ConfirmMailToken
 from authentication.schemas import UserRegisterSchema, AuthOutSchema
-from generics.schemas import MessageOut, Inline
+from generics.schemas import MessageOut, Inline, ActionMessageOut
 
 
 @djapify(allowed_method="POST")
@@ -56,7 +48,7 @@ def register_user(request, user_payload: UserRegisterSchema) -> {201: MessageOut
 @ensure_csrf_cookie
 @csrf_exempt
 @djapify(allowed_method="POST")
-def login_user(request, data: LoginSchema) -> {200: MessageOut, 400: Inline}:
+def login_user(request, data: LoginSchema) -> {200: ActionMessageOut, 400: Inline}:
     """
     Login User
     If user is logged in successfully, login token will be returned in response headers.
@@ -86,7 +78,12 @@ def login_user(request, data: LoginSchema) -> {200: MessageOut, 400: Inline}:
         }
 
     login(request, user)
-    return redirect("/hey")
+    return {
+        "message": "User logged in successfully.",
+        "message_type": "success",
+        "alias": "register_success",
+        "redirect": "/"
+    }
 
 
 @djapify(auth=SessionAuth)

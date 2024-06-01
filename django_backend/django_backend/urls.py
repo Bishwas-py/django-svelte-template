@@ -8,5 +8,6 @@ urlpatterns = [
     path('', openapi.urls),
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
+    path('home/', include('home.urls')),
     path('todos/', include('todo.urls')),
 ] + trigger_pattern

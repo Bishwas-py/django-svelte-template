@@ -2,6 +2,8 @@ from typing import Optional
 from djapy import Schema
 from djapy.schema.schema import ImageUrl
 
+from authentication.schemas.user_schema import UserSchema
+
 
 class SiteSchema(Schema):
     id: int
@@ -19,3 +21,8 @@ class SiteDataSchema(Schema):
     thumbnail: ImageUrl
     keywords: Optional[str] = ''
     ads_on: bool
+
+
+class InitDataSchema(Schema):
+    site_data: SiteDataSchema
+    current_user: Optional[UserSchema] = None

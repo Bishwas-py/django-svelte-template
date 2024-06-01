@@ -3,5 +3,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('site-data/', views.get_site_data, name="get_site_data"),
+    path('init-data/', views.get_init_data, name="get_init_data"),
 ]

@@ -15,6 +15,5 @@ urlpatterns = [
     path('forgot-password/', forgot_password_views.request_password_token, name="request_password_token"),
     path('forgot-password/reset-password/', forgot_password_views.reset_password, name="reset_password"),
 
-    path('current-user/', users_views.get_user_info, name="get_user_info"),
     path('user/<str:username>/', users_views.get_user_by_username, name="update_user"),
 ]

@@ -4,6 +4,7 @@ from typing import Optional
 from django.db.models.fields.files import ImageFieldFile
 from djapy import Schema
 from djapy.schema import Outsource
+from djapy.schema.schema import ImageUrl
 from pydantic import Field, field_validator, computed_field
 
 
@@ -15,12 +16,7 @@ class ProfileSchema(Schema):
     bio: str | None
     location: str | None
     birth_date: str | None
-    image: Optional[str]
-
-    @field_validator('image', mode='before')
-    def validate_image(cls, image: ImageFieldFile | None):
-        if image:
-            return image.url
+    image: ImageUrl
 
 
 class GenericUserSchema(Schema):
