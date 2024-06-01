@@ -1,35 +1,17 @@
 <script>
-    import Error from "$items/Error.svelte";
-    import Form from "$items/Form.svelte";
-    let loading = $state(false);
+    import Flash from "@friendofsvelte/django-kit/components/Flash.svelte";
+    import {add_toast} from "@friendofsvelte/django-kit/notifier";
+    import "@friendofsvelte/django-kit/styles/toast.css";
+
+    let {children} = $props();
 </script>
 
-<Form action="?/login" method="post" bind:loading>
-    <div style="display: flex; flex-direction: column;">
-        <label for="username">Username</label>
-        <input type="text" name="username" placeholder="Username">
-        <Error name="username"/>
-    </div>
-    <div style="display: flex; flex-direction: column;">
-        <label for="password">Password</label>
-        <input type="password" name="password" placeholder="Password">
-        <Error name="password"/>
-    </div>
-    <button type="submit" disabled={loading}>
-        {#if loading}
-            ......
-        {:else}
-            Login
-        {/if}
-    </button>
-</Form>
+<Flash/>
 
-<style>
-    :global(form) {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 2rem;
-    }
-</style>
+{@render children()}
+
+<button onclick={()=>{
+    add_toast({message: 'Hello World',message_type: 'success', alias: 'hello_world'})
+}}>
+    Add Toast
+</button>

@@ -2,24 +2,30 @@ import {django_fetch_handle} from "@friendofsvelte/django-kit";
 import type {Handle, RequestEvent} from "@sveltejs/kit";
 import {sequence} from "@sveltejs/kit/hooks";
 import type {User} from "$lib/interfaces/auth";
+import {assign_cookies} from "@friendofsvelte/django-kit/utils";
+import type {SiteData} from "$lib/interfaces/siteData";
 
 export const handleFetch = django_fetch_handle;
 
-async function get_user(event: RequestEvent): Promise<User | null> {
-    try {
-        const response = await event.fetch(`$api/auth/current-user/`);
-        if (response.ok) return await response.json();
-    } catch (e) {
-        console.log(e);
-        return null;
-    }
-    return null;
+async function get_init_data(event: RequestEvent): Promise<[Response, {
+    current_user: User,
+    site_data: SiteData
+}]> {
+    const response = await event.fetch(`$api/home/init-data/`);
+    return [response, await response.json()];
 }
 
 const handleAuth = (async ({event, resolve}) => {
-    const user = await get_user(event);
-    if (user && 'id' in user) {
-        event.locals.user = user;
+    try {
+        const [response, init] = await get_init_data(event);
+        console.log(init)
+        assign_cookies(event, response);
+        if (response.ok) {
+            event.locals.current_user = init.current_user;
+            event.locals.site_data = init.site_data;
+        }
+    } catch (e) {
+        console.error("Error fetching user: ", e);
     }
     return resolve(event);
 }) satisfies Handle;
