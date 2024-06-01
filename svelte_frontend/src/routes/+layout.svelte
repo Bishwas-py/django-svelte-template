@@ -1,11 +1,14 @@
 <script>
-    import Flash from "@friendofsvelte/django-kit/components/Flash.svelte";
+    import "../app.css";
+    import "iconify-icon";
     import {add_toast} from "@friendofsvelte/django-kit/notifier";
-    import "@friendofsvelte/django-kit/styles/toast.css";
+    import PutFlash from "@friendofsvelte/django-kit/components/PutFlash.svelte";
+    import Flash from "$items/Flash.svelte";
 
     let {children} = $props();
 </script>
 
+<PutFlash/>
 <Flash/>
 
 {@render children()}
