@@ -18,7 +18,6 @@ async function get_init_data(event: RequestEvent): Promise<[Response, {
 const handleAuth = (async ({event, resolve}) => {
     try {
         const [response, init] = await get_init_data(event);
-        console.log(init)
         assign_cookies(event, response);
         if (response.ok) {
             event.locals.current_user = init.current_user;
