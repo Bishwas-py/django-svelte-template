@@ -1,4 +1,5 @@
-from typing import List
+from datetime import datetime
+from typing import List, Any, Optional, Literal
 
 from djapy import djapify, SessionAuth
 from djapy.pagination import paginate
@@ -12,11 +13,13 @@ class TodoItemSc(Schema):
     id: int
     title: str
     completed: bool
+    created_at: datetime
+    updated_at: datetime
 
 
 @djapify
 @paginate
-def list_todos(request) -> {200: List[TodoItemSc]}:
+def list_todos(request, **kwargs) -> {200: List[TodoItemSc]}:
     todos = TodoItem.objects.filter(user=request.user)
     return todos
 
@@ -29,7 +32,7 @@ def get_todo(request, todo_id: int) -> {200: TodoItemSc}:
 
 class TodoItemSchema(Form):
     title: str
-    completed: bool
+    completed: Optional[Literal['on', 'off']] = 'off'
 
 
 @djapify(allowed_method='POST')
@@ -37,7 +40,7 @@ def create_todo(request, todo: TodoItemSchema) -> {201: TodoItemSc}:
     todo = TodoItem.objects.create(
         user=request.user,
         title=todo.title,
-        completed=todo.completed
+        completed=todo.completed == 'on'
     )
     return 201, todo
 
