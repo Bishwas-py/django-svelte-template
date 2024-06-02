@@ -6,21 +6,24 @@
 </script>
 
 <Form action="?/login" method="post" bind:loading className="flex flex-col gap-2">
-    <div style="display: flex; flex-direction: column;">
+    <div class="input-group">
         <label for="username">Username</label>
-        <input type="text" name="username" placeholder="Username">
+        <input id="username" type="text" name="username" placeholder="Username"/>
         <Error name="username"/>
     </div>
-    <div style="display: flex; flex-direction: column;">
+    <div class="input-group">
         <label for="password">Password</label>
-        <input type="password" name="password" placeholder="Password">
+        <input id="password" type="password" name="password" placeholder="Password"/>
         <Error name="password"/>
     </div>
-    <button type="submit" disabled={loading}>
+    <button type="submit" disabled={loading} class="submit-button">
         {#if loading}
             ......
         {:else}
             Login
         {/if}
     </button>
+    <div class="flex">
+        <a href="/register" class="ml-auto text-blue-600 dark:text-blue-300 text-sm hover:text-blue-500">Register</a>
+    </div>
 </Form>
