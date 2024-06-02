@@ -1,8 +1,8 @@
-import {django_fetch_handle} from "@friendofsvelte/django-kit";
+import {assign_cookies} from "@friendofsvelte/django-kit/server/utils";
+import {django_fetch_handle} from "@friendofsvelte/django-kit/server/handle";
 import type {Handle, RequestEvent} from "@sveltejs/kit";
 import {sequence} from "@sveltejs/kit/hooks";
 import type {User} from "$lib/interfaces/auth";
-import {assign_cookies} from "@friendofsvelte/django-kit/utils";
 import type {SiteData} from "$lib/interfaces/siteData";
 
 export const handleFetch = django_fetch_handle;
