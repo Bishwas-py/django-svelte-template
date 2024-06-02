@@ -1,0 +1,9 @@
+venv/
+.idea/
+__pycache__/
+media/
+db.sqlite3
+config/*.py
+!config/*.sample
+virtualenv/
+static/
