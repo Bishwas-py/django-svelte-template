@@ -5,7 +5,7 @@
     let loading = $state(false);
 </script>
 
-<Form action="?/login" method="post" bind:loading>
+<Form action="?/login" method="post" bind:loading className="flex flex-col gap-2">
     <div style="display: flex; flex-direction: column;">
         <label for="username">Username</label>
         <input type="text" name="username" placeholder="Username">

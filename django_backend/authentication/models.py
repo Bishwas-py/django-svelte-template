@@ -1,6 +1,7 @@
 import datetime
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.db.models.signals import post_save
 from django.utils.crypto import get_random_string
 from django.db import models
 
@@ -10,6 +11,7 @@ import logging
 
 from authentication.extras import constants
 from authentication.extras.tokenizer import Tokenizer
+from profile.models import Profile
 
 
 class AuthToken(models.Model):
@@ -101,3 +103,15 @@ class Status(models.Model):
     class Meta:
         verbose_name = 'Status'
         verbose_name_plural = 'Status'
+
+
+def create_profile_with_status(sender, instance, created, **kwargs):
+    if created:
+        logging.info(f"Creating profile for {instance.username}")
+        user_profile = Profile.objects.create(user=instance)
+        user_status = Status.objects.create(user=instance)
+        user_profile.save()
+        user_status.save()
+
+
+post_save.connect(create_profile_with_status, sender=User)

@@ -12,8 +12,7 @@ from generics.schemas import MessageOut, Inline, ActionMessageOut
 
 @djapify(allowed_method="POST")
 @csrf_exempt
-@require_POST
-def register_user(request, user_payload: UserRegisterSchema) -> {201: MessageOut, 400: Inline}:
+def register_user(request, user_payload: UserRegisterSchema) -> {201: MessageOut, 400: MessageOut | Inline}:
     """
     Register User
     If user is registered successfully, user will be logged in, and email will be sent to user's email
@@ -35,6 +34,12 @@ def register_user(request, user_payload: UserRegisterSchema) -> {201: MessageOut
                 "username": "User with this username already exists.",
                 "email": "User with this email already exists."
             }
+        }
+    except ConnectionRefusedError:
+        return 400, {
+            "message": "User registered, but email could not be sent.",
+            "message_type": "error",
+            "alias": "email_not_sent"
         }
     login(request, user)
 

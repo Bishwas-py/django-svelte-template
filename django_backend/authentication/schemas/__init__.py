@@ -5,6 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from djapy import Schema
+from djapy.schema import Form
 from pydantic import field_validator, Field, constr, EmailStr
 
 from utils.symbols import attach_message
@@ -14,7 +15,7 @@ email_validator = EmailValidator()
 User = get_user_model()
 
 
-class UserRegisterSchema(Schema):
+class UserRegisterSchema(Form):
     username: constr(min_length=3, max_length=150)
     email: EmailStr
     password: constr(min_length=8)
