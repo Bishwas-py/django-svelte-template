@@ -6,7 +6,7 @@
         action: string;
         loading?: boolean;
         method?: string;
-        className?: string;
+        class?: string;
         action_function?: (e: Event) => void;
         children: Snippet;
     }
@@ -14,7 +14,7 @@
     let {
         action = '',
         method = 'post',
-        className = '',
+        class: className = '',
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         loading = $bindable(),
         children,
