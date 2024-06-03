@@ -3,7 +3,7 @@
 @tailwind utilities;
 @layer base {
     body {
-        @apply font-sans antialiased bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+        @apply font-sans antialiased bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100;
     }
 }
 
@@ -13,13 +13,13 @@
     }
 
     .input-group label, .label {
-        @apply text-sm font-medium text-gray-700 dark:text-gray-300;
+        @apply text-sm font-medium text-neutral-700 dark:text-neutral-300;
     }
 
     .input-group input, .input {
         @apply px-3 py-2 block w-full rounded-md border
-        border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
-        dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300;
+        border-neutral-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
+        dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300;
     }
 
     .submit-button {
