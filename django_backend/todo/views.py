@@ -4,6 +4,8 @@ from typing import List, Any, Optional, Literal
 from djapy import djapify, SessionAuth
 from djapy.pagination import paginate
 from djapy.schema import Form, Schema
+from pydantic import Field, field_validator
+
 from todo.models import TodoItem
 
 AUTH_MECHANISM = SessionAuth()
@@ -12,7 +14,8 @@ AUTH_MECHANISM = SessionAuth()
 class TodoItemSc(Schema):
     id: int
     title: str
-    completed: bool
+    completed_at: Optional[datetime] = None
+    will_complete_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
 
@@ -32,17 +35,30 @@ def get_todo(request, todo_id: int) -> {200: TodoItemSc}:
 
 class TodoItemSchema(Form):
     title: str
-    completed: Optional[Literal['on', 'off']] = 'off'
+    completed_at: Optional[datetime] = None
+    will_complete_at: Optional[datetime] = None
+
+    @field_validator('completed_at', mode="before")
+    def validate_completed_at(cls, v):
+        # Form validation, can accept a list of values
+        if v[0]:
+            return v[0]
+
+    @field_validator('will_complete_at', mode="before")
+    def validate_will_complete_at(cls, v):
+        if v[0]:
+            return v[0]
 
 
 @djapify(allowed_method='POST')
-def create_todo(request, todo: TodoItemSchema) -> {201: TodoItemSc}:
-    todo = TodoItem.objects.create(
+def create_todo(request, todo: TodoItemSchema) -> {201: bool}:
+    TodoItem.objects.create(
         user=request.user,
         title=todo.title,
-        completed=todo.completed == 'on'
+        completed_at=todo.completed_at,
+        will_complete_at=todo.will_complete_at
     )
-    return 201, todo
+    return 201, True
 
 
 @djapify(allowed_method='PUT')
