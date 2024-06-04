@@ -42,7 +42,7 @@ class TodoItemSchema(Form):
     @field_validator('completed_at', 'will_complete_at', mode="before")
     def validate_completed_at(cls, v):
         # Form validation, can accept a list of values
-        if v[0]:
+        if v and v[0]:
             return v[0]
 
 
@@ -57,15 +57,15 @@ def create_todo(request, todo: TodoItemSchema) -> {201: bool}:
     return 201, True
 
 
-@djapify(allowed_method='PUT')
-def update_todo(request, todo_id: int, todo: TodoItemSchema) -> {200: TodoItemSc}:
+@djapify(allowed_method='POST')
+def update_todo(request, todo_id: int, todo: TodoItemSchema) -> {200: bool}:
     todos = TodoItem.objects.filter(id=todo_id)
     todos.update(
         title=todo.title,
-        completed=todo.completed_at,
+        completed_at=todo.completed_at,
         will_complete_at=todo.will_complete_at
     )
-    return todo
+    return 200, True
 
 
 @djapify(allowed_method='DELETE')

@@ -24,6 +24,10 @@ from config.mail import (
 )
 from config.db import DATABASES
 
+from config.env import (
+    DEBUG, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS
+)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,9 +38,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-pt50ualer8otrcli1@#@nsfqe*$f4mbtp+rug@rkyr^bia$fz!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 # Application definition
 
