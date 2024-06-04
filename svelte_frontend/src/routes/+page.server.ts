@@ -9,7 +9,7 @@ const allow_cookies = true;
 export const actions = via_route_name([
     {name: 'create_todo', method: 'POST'},
     {name: 'delete_todo', method: 'DELETE'},
-    {name: 'update_todo', method: 'PUT'}
+    {name: 'update_todo', method: 'PUT'},
 ], {allow_cookies})
 
 const get_todos = async (event: PageServerLoadEvent) => {
