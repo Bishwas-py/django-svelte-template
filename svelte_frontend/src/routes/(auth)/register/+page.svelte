@@ -5,7 +5,7 @@
     let loading = $state(false);
 </script>
 
-<Form action="?/register" method="post" bind:loading className="flex flex-col gap-2">
+<Form action="?/register" method="post" bind:loading class="flex flex-col gap-2">
     <div class="input-group">
         <label for="username">Username</label>
         <input id="username" type="text" name="username" placeholder="username1"/>

@@ -2,6 +2,11 @@
     import {page} from "$app/stores";
     import Form from "$items/Form.svelte";
     import Error from "$items/Error.svelte";
+    import {dayjs_} from "$lib";
+    import TodoItem from "$items/TodoItem.svelte";
+    import {quintOut} from "svelte/easing";
+    import {flip} from "svelte/animate";
+    import {fade} from "svelte/transition";
 </script>
 
 <svelte:head>
@@ -9,8 +14,17 @@
 </svelte:head>
 
 <div class="flex flex-col p-7 items-center gap-12 w-full">
-    <h1 class="text-4xl font-black text-center">Welcome, {$page.data.current_user.username}</h1>
-
+    <div class="flex flex-row justify-between items-center gap-4 w-full max-w-4xl">
+        <h1 class="ml-auto text-4xl font-black text-center">Welcome, {$page.data.current_user.username}</h1>
+        <form action="/logout" method="POST" class="ml-auto text-sm flex justify-center items-center px-1 h-6 sm:px-2 sm:h-8
+                     bg-neutral-100 dark:bg-neutral-800 font-normal whitespace-nowrap
+                        text-neutral-700 dark:text-white dark:outline-0 outline outline-1 outline-indigo-900
+                        shadow focus:ring focus:outline-none rounded-lg mr-4">
+            <button type="submit">
+                Logout
+            </button>
+        </form>
+    </div>
     <Form action="?/create_todo" method="post"
           class="flex flex-col items-center justify-center rounded-lg w-full max-w-3xl gap-3">
         <h2 class="text-2xl font-bold">
@@ -43,22 +57,17 @@
             </div>
             <button type="submit" class="whitespace-nowrap pr-3 text-orange-500">add todo</button>
         </div>
+        <small class="text-xs text-gray-500 dark:text-gray-400">
+            <span class="text-green-500">9 hours</span> is the default time for the deadline.
+        </small>
     </Form>
 
     <div class="flex flex-col gap-4 w-full items-center max-w-4xl">
-        {#each $page.data.todos.items as todo}
-            <Form action="?/delete_todo"
-                  class="flex flex-row items-center gap-3 bg-white dark:bg-neutral-950/50 shadow
-            rounded p-3 w-full max-w-3xl">
-                <input type="hidden" name="todo_id" value={todo.id}/>
-                <div class="flex flex-col">
-                    <span>{todo.title}</span>
-                    <span>{todo.created_at}</span>
-                    <span>{todo.completed_at}</span>
-                    <span>{todo.will_complete_at}</span>
-                </div>
-                <button type="submit" class="text-red-500">delete</button>
-            </Form>
+        {#each $page.data.todos.items as todo (todo.id)}
+            <div transition:fade animate:flip={{easing: quintOut, duration: 500}}
+                 class="w-full  max-w-3xl flex items-center">
+                <TodoItem {todo}/>
+            </div>
         {/each}
     </div>
 </div>

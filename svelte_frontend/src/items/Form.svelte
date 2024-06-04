@@ -3,10 +3,10 @@
     import type {Snippet} from 'svelte'
 
     interface Props {
-        action: string;
+        action?: string;
         loading?: boolean;
         method?: string;
-        class?: string;
+        class: string;
         action_function?: (e: Event) => void;
         children: Snippet;
     }
@@ -19,7 +19,6 @@
         loading = $bindable(),
         children,
     }: Props = $props();
-
     let action_function = () => {
         loading = true;
         return ({update}) => {

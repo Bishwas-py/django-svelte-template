@@ -3,8 +3,8 @@
 @tailwind utilities;
 @layer base {
     body {
-        @apply font-sans antialiased bg-white text-neutral-900
-        bg-gradient-to-bl from-neutral-100 to-neutral-200 dark:to-neutral-900 dark:from-indigo-950 dark:text-neutral-300;
+        @apply font-sans antialiased text-neutral-900
+        bg-orange-50 dark:bg-neutral-900 dark:text-neutral-300;
     }
 }
 
