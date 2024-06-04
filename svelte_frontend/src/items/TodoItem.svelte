@@ -99,6 +99,11 @@
         <Form action="?/todos/update&_sfx=/{todo.id}/" method="post"
               after={() => is_edit_popup_enabled = false}
               class="flex flex-col gap-2 bg-white dark:bg-neutral-950 shadow rounded p-3 w-full max-w-xl outline outline-4 outline-sky-500/40">
+            <!--
+            `_sfx`  here is basically a suffix that will be attached to /todos/update/; making it /todos/update/{todo.id}/
+            the info will be later sent to the server (django) to know which todo to update
+            -->
+
             <h3 class="text-lg font-bold">Edit todo: {todo.title}</h3>
 
             <input type="hidden" name="todo_id" value={todo.id}/>
