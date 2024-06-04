@@ -33,7 +33,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@friendofsvelte/django-kit": "^0.0.1-dev.118",
+		"@friendofsvelte/django-kit": "^0.0.1-dev.119",
 		"dayjs": "^1.11.11",
 		"iconify-icon": "^2.1.0"
 	}

@@ -2,7 +2,6 @@
     import {page} from "$app/stores";
     import Form from "$items/Form.svelte";
     import Error from "$items/Error.svelte";
-    import {dayjs_} from "$lib";
     import TodoItem from "$items/TodoItem.svelte";
     import {quintOut} from "svelte/easing";
     import {flip} from "svelte/animate";

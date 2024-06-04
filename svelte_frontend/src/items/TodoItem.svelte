@@ -18,7 +18,7 @@
 
 <Form class="flex flex-row items-center gap-3 bg-white dark:bg-neutral-950/50 shadow
             rounded p-3 w-full">
-    <iconify-icon icon="bi:circle-fill" class="text-blue-500"/>
+    <iconify-icon icon="bi:circle-fill" class="text-blue-500 w-4"/>
     <input type="hidden" name="todo_id" value={todo.id}/>
     <div class="flex flex-col w-full">
         <h3 class="text-lg font-bold">{todo.title}</h3>
@@ -57,7 +57,7 @@
 
 {#if is_edit_popup_enabled}
     <div class="fixed inset-0 bg-black/50 flex justify-center items-center backdrop-blur">
-        <Form action="?/update_todo" method="post"
+        <Form action="?/todos/update&_sfx=/{todo.id}/" method="post"
               class="flex flex-col gap-2 bg-white dark:bg-neutral-950 shadow rounded p-3 w-full max-w-xl outline outline-4 outline-sky-500/40">
             <h3 class="text-lg font-bold">Edit todo: {todo.title}</h3>
 

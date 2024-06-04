@@ -3,14 +3,12 @@ import type {OffsetPaginated} from "$lib/interfaces";
 import type {Todo} from "$lib/interfaces/todos";
 import type {PageServerLoad, PageServerLoadEvent} from './$types';
 import {get_paginator} from "$lib/server";
-import {via_route_name} from "@friendofsvelte/django-kit/server/actions";
+import {via_route, via_route_name} from "@friendofsvelte/django-kit/server/actions";
 
-const allow_cookies = true;
-export const actions = via_route_name([
-    {name: 'create_todo', method: 'POST'},
-    {name: 'delete_todo', method: 'DELETE'},
-    {name: 'update_todo', method: 'PUT'},
-], {allow_cookies})
+export const actions = {
+    ...via_route_name([{name: 'create_todo', method: 'POST'}, {name: 'delete_todo', method: 'DELETE'},]),
+    ...via_route(['update',], {prefix: 'todos'})
+}
 
 const get_todos = async (event: PageServerLoadEvent) => {
     const paginator = get_paginator(event.url);
