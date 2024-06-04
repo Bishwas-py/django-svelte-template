@@ -1,10 +1,11 @@
-from datetime import datetime
-from typing import List, Any, Optional, Literal
+from datetime import datetime, timedelta
+from typing import List, Any, Optional
 
+from django.http import HttpResponse
 from djapy import djapify, SessionAuth
 from djapy.pagination import paginate
 from djapy.schema import Form, Schema
-from pydantic import Field, field_validator
+from pydantic import field_validator, constr
 
 from todo.models import TodoItem
 
@@ -24,7 +25,7 @@ class TodoItemSc(Schema):
 @paginate
 def list_todos(request, **kwargs) -> {200: List[TodoItemSc]}:
     todos = TodoItem.objects.filter(user=request.user)
-    return todos
+    return todos.order_by('-created_at')
 
 
 @djapify
@@ -34,18 +35,13 @@ def get_todo(request, todo_id: int) -> {200: TodoItemSc}:
 
 
 class TodoItemSchema(Form):
-    title: str
+    title: constr(max_length=100, min_length=5)
     completed_at: Optional[datetime] = None
     will_complete_at: Optional[datetime] = None
 
-    @field_validator('completed_at', mode="before")
+    @field_validator('completed_at', 'will_complete_at', mode="before")
     def validate_completed_at(cls, v):
         # Form validation, can accept a list of values
-        if v[0]:
-            return v[0]
-
-    @field_validator('will_complete_at', mode="before")
-    def validate_will_complete_at(cls, v):
         if v[0]:
             return v[0]
 
@@ -56,7 +52,7 @@ def create_todo(request, todo: TodoItemSchema) -> {201: bool}:
         user=request.user,
         title=todo.title,
         completed_at=todo.completed_at,
-        will_complete_at=todo.will_complete_at
+        will_complete_at=todo.will_complete_at if todo.will_complete_at else datetime.now() + timedelta(hours=9)
     )
     return 201, True
 
@@ -69,3 +65,10 @@ def update_todo(request, todo_id: int, todo: TodoItemSchema) -> {200: TodoItemSc
         completed=todo.completed
     )
     return todo
+
+
+@djapify(allowed_method='DELETE')
+def delete_todo(request, todo_id: int) -> Any:
+    todo = TodoItem.objects.get(id=todo_id)
+    todo.delete()
+    return HttpResponse(status=204)
