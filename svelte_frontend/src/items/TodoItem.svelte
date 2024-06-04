@@ -58,6 +58,7 @@
 {#if is_edit_popup_enabled}
     <div class="fixed inset-0 bg-black/50 flex justify-center items-center backdrop-blur">
         <Form action="?/todos/update&_sfx=/{todo.id}/" method="post"
+              after={() => is_edit_popup_enabled = false}
               class="flex flex-col gap-2 bg-white dark:bg-neutral-950 shadow rounded p-3 w-full max-w-xl outline outline-4 outline-sky-500/40">
             <h3 class="text-lg font-bold">Edit todo: {todo.title}</h3>
 

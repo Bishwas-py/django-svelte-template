@@ -9,7 +9,8 @@
         class: string;
         action_function?: (e: Event) => void;
         children: Snippet;
-        inval: boolean
+        inval?: boolean,
+        after?: () => void;
     }
 
     let {
@@ -18,14 +19,17 @@
         class: className = '',
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         loading = $bindable(),
-        inval: invalidateAll = false,
+        inval: invalidateAll = true,
         children,
+        after = () => {
+        }
     }: Props = $props();
     let action_function = () => {
         loading = true;
         return ({update}: { update: ({invalidateAll}: { invalidateAll: boolean }) => Promise<void> }) => {
             update({invalidateAll}).finally(async () => {
                 loading = false;
+                after();
             });
         };
     }
