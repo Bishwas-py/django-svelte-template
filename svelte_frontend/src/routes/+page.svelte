@@ -61,10 +61,9 @@
         </small>
     </Form>
 
-    <div class="flex flex-col gap-4 w-full items-center max-w-4xl">
+    <div class="grid grid-cols-2 gap-3 w-full items-center max-w-6xl">
         {#each $page.data.todos.items as todo (todo.id)}
-            <div transition:fade animate:flip={{easing: quintOut, duration: 500}}
-                 class="w-full  max-w-3xl flex items-center">
+            <div transition:fade animate:flip={{easing: quintOut, duration: 500}}>
                 <TodoItem {todo}/>
             </div>
         {/each}
