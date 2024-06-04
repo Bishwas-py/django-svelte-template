@@ -9,6 +9,7 @@
         class: string;
         action_function?: (e: Event) => void;
         children: Snippet;
+        inval: boolean
     }
 
     let {
@@ -17,13 +18,13 @@
         class: className = '',
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         loading = $bindable(),
+        inval: invalidateAll = false,
         children,
     }: Props = $props();
     let action_function = () => {
         loading = true;
-        return ({update}) => {
-            // Set invalidateAll to false if you don't want to reload page data when submitting
-            update({invalidateAll: true}).finally(async () => {
+        return ({update}: { update: ({invalidateAll}: { invalidateAll: boolean }) => Promise<void> }) => {
+            update({invalidateAll}).finally(async () => {
                 loading = false;
             });
         };
@@ -31,6 +32,6 @@
 
 </script>
 
-<form {action} {method} use:enhance={action_function} class={className}>
+<form {action} {method} use:enhance={action_function} class={className} class:loading>
     {@render children()}
 </form>
