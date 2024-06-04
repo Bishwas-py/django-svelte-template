@@ -62,7 +62,8 @@ def update_todo(request, todo_id: int, todo: TodoItemSchema) -> {200: TodoItemSc
     todos = TodoItem.objects.filter(id=todo_id)
     todos.update(
         title=todo.title,
-        completed=todo.completed
+        completed=todo.completed_at,
+        will_complete_at=todo.will_complete_at
     )
     return todo
 
