@@ -76,12 +76,12 @@
             <div class="flex flex-col justify-between">
                 <div class="flex flex-wrap flex-row justify-between gap-1 sm:gap-2">
                     {#if todo.completed_at}
-                        <ViewDate date_at={todo.completed_at} text="(completed)"/>
+                        <ViewDate date_at={todo.completed_at} text="(completed)" class="text-green-500 text-xs"/>
                     {/if}
-                    <ViewDate date_at={todo.will_complete_at} text="(will complete)"/>
+                    <ViewDate date_at={todo.will_complete_at} text="(will complete)" class="text-purple-500 text-xs"/>
                 </div>
 
-            <blockquote class="text-xs text-{todo_status.color} border-l-4 border-{todo_status.color} pl-2">
+                <blockquote class="text-xs text-{todo_status.color} border-l-4 border-{todo_status.color} pl-2">
                     {todo_status.text}
                 </blockquote>
             </div>

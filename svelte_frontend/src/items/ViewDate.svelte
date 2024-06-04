@@ -3,13 +3,17 @@
     import {fade} from "svelte/transition";
 
 
-    const {date_at, text = 'completed'}: { date_at: string, text: string } = $props();
+    const {date_at, text = 'completed', class: class_ = ''}: {
+        date_at: string,
+        text: string,
+        class?: string
+    } = $props();
     let show_from_now = $state(false);
     let timeout = $state();
 </script>
 
 {#key show_from_now}
-    <button type="button" class="text-xs text-blue-500 dark:text-blue-300"
+    <button type="button" class={class_}
             title="Double click to toggle between from now and formatted date."
             in:fade
             ondblclick={() => {
