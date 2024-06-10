@@ -253,7 +253,7 @@ export const actions = {
 
 #### Rendering data
 
-In `src/routes/+page.server.ts`, you can see:
+In [src/routes/+page.server.ts](svelte_frontend%2Fsrc%2Froutes%2F%2Bpage.server.ts), you can see:
 
 ```ts
 export const load: PageServerLoad = async (event) => {
@@ -271,7 +271,7 @@ export const load: PageServerLoad = async (event) => {
 ```
 
 Here, `get_todos` is a function which is used to get the todos from the server, and it
-uses `get_paginator` to get the paginated data.
+uses [get_paginator](svelte_frontend%2Fsrc%2Flib%2Fserver%2Findex.ts) to get the paginated data.
 
 If user is not logged in, it will redirect the user to the login page with an error message.
 
