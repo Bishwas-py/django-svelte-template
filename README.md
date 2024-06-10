@@ -128,7 +128,7 @@ messages to `notifier.toasts` (which you will learn shortly).
 
 `Flash` is a custom written component, within `src/items/` directory, (alias for `$items`).
 
-`@friendofsvelte/django-kit` also provides a `Flash` component inside, `components/Flash.svelte`.
+`@friendofsvelte/django-kit` also provides a `DefaultFlash` component inside, `components/DefaultFlash.svelte`.
 
 #### Notifier
 
