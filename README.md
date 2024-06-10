@@ -254,5 +254,23 @@ feature, extended by `django-kit`.
 
 ### Backend - using Django and Djapy
 
-The backend, and it's features, but the docs is yet to be written, you can see the `django_backend` directory
-for more information.
+The backend, it's actually the heart of this template, and it's the most important part.
+It is completely rich with features, and you can use it for other projects as well.
+
+It has session based authentication, permissions, paginated data, forgot password, reset password,
+confirm email, and a lot more.
+
+It is inside `django_backend/` directory, and it's a Django project.
+
+#### Authentication
+
+The `authentication` app is responsible for handling the authentication, and it has a lot of features.
+
+* [auth_views.py](django_backend%2Fauthentication%2Fviews%2Fauth_views.py)
+* [confirm_email_views.py](django_backend%2Fauthentication%2Fviews%2Fconfirm_email_views.py)
+* [forgot_password_views.py](django_backend%2Fauthentication%2Fviews%2Fforgot_password_views.py)
+* [users_views.py](django_backend%2Fauthentication%2Fviews%2Fusers_views.py)
+
+It has four major views files, each fulfilling a specific task, related to their name.
+You can check [urls.py](django_backend%2Fauthentication%2Furls.py) for more info.
+
