@@ -262,6 +262,9 @@ confirm email, and a lot more.
 
 It is inside `django_backend/` directory, and it's a Django project.
 
+> Inside each app, you'll most probably see a schema file where all schemas are defined, and a views file
+> where all views are defined.
+
 #### Authentication
 
 The `authentication` app is responsible for handling the authentication, and it has a lot of features.
@@ -274,3 +277,10 @@ The `authentication` app is responsible for handling the authentication, and it 
 It has four major views files, each fulfilling a specific task, related to their name.
 You can check [urls.py](django_backend%2Fauthentication%2Furls.py) for more info.
 
+#### Home
+
+The another app you will see is `home`, it's a simple app, which is responsible for rendering the
+initial data. The [views.py](django_backend%2Fhome%2Fviews.py) here only has
+one view function `get_init_data`, which is actually a multipurpose view function.
+
+It assigns the current user and site data to the request, and also assign csrf token to the request.

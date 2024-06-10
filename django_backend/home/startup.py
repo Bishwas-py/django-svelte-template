@@ -1,12 +1,12 @@
 import logging
 
 SITE_DEFAULT_DATA = {
-    'title': 'Webmatrices - Online digi learning platform',
-    'subtitle': 'Get the best of coding, freelancing, indie dev, and app dev',
-    'description': 'Forum and tools site for coding, freelancing, indie dev, and app dev',
-    'domain': 'webmatrices.com',
-    'name': 'Webmatrices',
-    'keywords': 'webmatrices, coding, indie dev, freelancing, app dev',
+    'title': 'Djapy - Django and Python Supremacy',
+    'subtitle': 'We love django and python, so should you',
+    'description': 'freelancing, coding, indie dev, app dev',
+    'domain': 'djapy.io',
+    'name': 'Djapy',
+    'keywords': 'django, python, djapy, coding, indie dev, app dev',
     'ads_on': False,
 }
 
