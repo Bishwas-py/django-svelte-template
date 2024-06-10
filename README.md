@@ -12,14 +12,14 @@ Okay, what now? Obviously, you wanna how to use this template and everything aro
 
 So, let's start with:
 
-### Prerequisites
+## Prerequisites
 
 We have used powerful tools from both worlds to make this happen, you can see that here:
 
 - For backend: Django, Djapy, Pydantic, [DjangoKit (PyPi)](https://pypi.org/project/django-kit-fos/)
 - For frontend: Svelte 5, Tailwind CSS, [DjangoKit (NPM)](https://www.npmjs.com/package/@friendofsvelte/django-kit)
 
-#### For backend  <img src="https://skillicons.dev/icons?i=django" width="12">
+### For backend  <img src="https://skillicons.dev/icons?i=django" width="12">
 
 The primary reason of using Django, it has good ORM, and I am comfortable using it. You can
 use whatever backend you want with this template, it's extremely compatible.
@@ -30,7 +30,7 @@ quick, satisfying development process, with Dark-mode swagger in it.
 DjangoKit, is actually an url binder or somehow like a request handler. Let's say,
 it serves as a proxy for SvelteKit requests to Django.
 
-#### For Frontend  <img src="https://skillicons.dev/icons?i=svelte" width="12">
+### For Frontend  <img src="https://skillicons.dev/icons?i=svelte" width="12">
 
 No doubts, Svelte is awesome, and I do feel Svelte 5 is awesome too. And `DjangoKit (NPM)` is a really
 powerful tool, provides quick and easy ways to integrate django's djapy with sveltekit
@@ -50,7 +50,7 @@ we might feel it's just pure magic going on here, but that's totally not magic.
 
 Making things, even simple, we should start from the very `+layout.svelte` file.
 
-### Flash messages
+#### Flash messages
 
 In `src/+layout.svelte`, you can see:
 
@@ -78,7 +78,7 @@ messages to `notifier.toasts` (which you will learn shortly).
 
 `@friendofsvelte/django-kit` also provides a `Flash` component inside, `components/Flash.svelte`.
 
-### Current user and site info
+#### Current user and site info
 
 Now, let's have a simple look at `src/+layout.server.ts`,
 
@@ -95,12 +95,12 @@ export const load: LayoutServerLoad = async (event) => {
 
 `event.locals` is assigned by `hooks.server.ts`, which is a middleware for the server.
 
-### Form handling and validation
+#### Form handling and validation
 
 Well, this is my favorite part, and I am sure you will love it too. Using DjangoKit and Djapy
 makes it really easy to handle forms and validations.
 
-#### Components Info
+##### Components Info
 
 In `src/items/`, you can see a `Form.svelte` file, which is a custom form component, you are not
 required to use this, but it has some extra features, like `loading` state boolean, enhanced-forms actions
@@ -136,7 +136,7 @@ Also, `<PutFlash/>` binds every error sent in the following way:
 
 `message` and `message_type` are required, else are optional.
 
-#### Form actions
+##### Form actions
 
 The most favorite part of this template, is the form actions. Let's have a look at our `src/routes/+page.svelte`,
 
