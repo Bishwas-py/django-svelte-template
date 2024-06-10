@@ -54,7 +54,7 @@ Making things, even simple, we should start from the very `+layout.svelte` file.
 
 In `+layout.svelte`, you can see:
 
-```sveltehtml
+```svelte
 <script>
     import "../app.css"; // for styling, optional: $items and pages are styled using tailwind css
     import "iconify-icon"; // for icons, optional: $items/Flash.svelte uses this
@@ -76,3 +76,4 @@ messages to `notifier.toasts` (which you will learn shortly).
 
 `Flash` is an custom written component, within `src/items/` directory, (alias for `$items`).
 
+`@friendofsvelte/django-kit` also provides a `Flash` component inside, `components/Flash.svelte`.
