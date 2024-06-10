@@ -222,8 +222,35 @@ If user is not logged in, it will redirect the user to the login page with an er
 
 #### Hooks: Authentication and Site data
 
-The feature is there, but the docs is yet to be written, you can see the `hooks.server.ts` file
-for more information.
+For each first visit in a page, it triggers `handleAuth` which assigns `event.locals.current_user` and
+`event.locals.site_data` to the event, which is used in `src/+layout.server.ts`.
+
+`handleAuth` uses the `get_init_data` function is used to get data.
+`handleAuth` later saves the cookies sent by the server, and assigns the data (site and user) to the event.
+
+To make fetching data to backend easier, we are using `django_fetch_handle`:
+
+```ts
+import {django_fetch_handle} from "@friendofsvelte/django-kit/server/handle";
+
+export const handleFetch = django_fetch_handle;
+```
+
+It allows you to request to backend endpoints by using `$api/` alias:
+
+```ts
+event.fetch(`$api/path/to/endpoint`, {
+    method: 'POST',
+    body: JSON.stringify({data: 'data'}),
+    headers: {
+        'Content-Type': 'application/json'
+    }
+})
+```
+
+You can use this alias on `load` functions, forms `actions` or anywhere where
+you need to fetch data from the backend via `event.fetch`. It's the SvelteKit
+feature, extended by `django-kit`.
 
 ### Backend - using Django and Djapy
 
