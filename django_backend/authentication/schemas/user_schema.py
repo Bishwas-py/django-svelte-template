@@ -1,11 +1,9 @@
 from datetime import datetime
-from typing import Optional
 
-from django.db.models.fields.files import ImageFieldFile
 from djapy import Schema
 from djapy.schema import Outsource
 from djapy.schema.schema import ImageUrl
-from pydantic import Field, field_validator, computed_field
+from pydantic import computed_field
 
 
 class StatusSchema(Schema):
