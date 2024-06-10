@@ -12,6 +12,9 @@ SITE_DEFAULT_DATA = {
 
 
 def site_data_db_startup():
+    """
+    This function is called to store default site data in the database.
+    """
     from django.contrib.sites.models import Site
     from home.models import SiteData
 
