@@ -23,6 +23,8 @@ cd django_backend; python3 -m venv venv; source venv/bin/activate; pip install -
 python manage.py migrate; python manage.py runserver;
 ```
 
+If you django server is running, goto `http://localhost:8000/` for swagger documentation.
+
 **Run sveltekit frontend:**
 
 ```bash
@@ -30,13 +32,13 @@ cd svelte_frontend; npm install;
 npm run dev;
 ```
 
+Go to the given localhost url by `npm run dev`, and you will see a `todo` app, with a lot of features.
+
 **Run test emailing service:**
 
 ```bash
 aiosmtpd -n -l localhost:1725 --debug
 ```
-
-Go to the given localhost url by `npm run dev`, and you will see a `todo` app, with a lot of features.
 
 > An `npm create` script will soon be available, to create a new fresh project with this template.
 > If you don't want the default `todo` app, you can remove it, and create your own app.
@@ -296,8 +298,6 @@ It has session based authentication, permissions, paginated data, forgot passwor
 confirm email, and a lot more.
 
 It is inside `django_backend/` directory, and it's a Django project.
-
-If you django server is running, goto `http://localhost:8000/` for swagger documentation.
 
 > Inside each app, you'll most probably see a schema file where all schemas are defined, and a views file
 > where all views are defined.
