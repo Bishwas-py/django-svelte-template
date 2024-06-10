@@ -69,7 +69,7 @@ it serves as a proxy for SvelteKit requests to Django.
 
 No doubts, Svelte is awesome, and I do feel Svelte 5 is awesome too. And `DjangoKit (NPM)` is a really
 powerful tool, provides quick and easy ways to integrate django's djapy with sveltekit
-frontend, has toast (svelte runes based) and flash notification (cookie based).
+frontend, has toast (svelte runes based) and flash messages (cookie based).
 
 And tailwind css obviously, it could be a semi-sin to hate this thing, but yes, if you wanna remove
 this, it's perfectly fine.
@@ -110,9 +110,48 @@ In `src/+layout.svelte`, you can see:
 `PutFlash` is a components via `@friendofsvelte/django-kit`, which bind server sent flash
 messages to `notifier.toasts` (which you will learn shortly).
 
+`<PutFlash/>` binds every error sent in the following way:
+
+```json
+{
+  "message": "Error message",
+  "message_type": "error",
+  "alias": "error",
+  "action": {
+    "path": "/login",
+    "label": "Login here"
+  }
+}
+```
+
+`message` and `message_type` are required, else are optional.
+
 `Flash` is a custom written component, within `src/items/` directory, (alias for `$items`).
 
 `@friendofsvelte/django-kit` also provides a `Flash` component inside, `components/Flash.svelte`.
+
+#### Notifier
+
+You might want to add a toast notification from the frontend, you can use `notifier` store.
+
+```ts
+import {add_toast, dismiss_toast_after} from "$lib/notifier.svelte";
+
+add_toast({message: 'Hello World', message_type: 'success',}) // this will add a toast, but won't auto dismiss
+dismiss_toast_after(add_toast({message: 'Hello World', message_type: 'success',})) // this will dismiss the toast
+```
+
+Here's a simple example of using `notifier` store.
+
+```svelte
+<script>
+    import {add_toast, dismiss_toast_after} from "$lib/notifier.svelte";
+</script>
+
+<button onclick={()=>{dismiss_toast_after(add_toast({message: 'Hello World', message_type: 'success',}))}}>
+    Add Toast
+</button>
+```
 
 #### Current user and site info
 
@@ -155,22 +194,6 @@ sent by the server (using Pydantic), and shows them in a nice way.
 ```
 
 This will show the error for the `username` field, if any.
-
-Also, `<PutFlash/>` binds every error sent in the following way:
-
-```json
-{
-  "message": "Error message",
-  "message_type": "error",
-  "alias": "error",
-  "action": {
-    "path": "/login",
-    "label": "Login here"
-  }
-}
-```
-
-`message` and `message_type` are required, else are optional.
 
 ##### Form actions
 
