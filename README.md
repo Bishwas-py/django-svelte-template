@@ -16,15 +16,30 @@ To get started, you can simply clone this repository, and start working on it.
 git clone git@github.com:Bishwas-py/django-svelte-template.git
 ```
 
-And if you don't want the default `todo` app, you can remove it, and create your own app.
+**Run django backend:**
 
 ```bash
-cd django_backend;
-rm -rf todo;
-django-admin startapp your_app_name
+cd django_backend; python3 -m venv venv; source venv/bin/activate; pip install -r requirements.txt;
+python manage.py migrate; python manage.py runserver;
 ```
 
-An `npm create` script will soon be available, to create a new fresh project with this template.
+**Run sveltekit frontend:**
+
+```bash
+cd svelte_frontend; npm install;
+npm run dev;
+```
+
+**Run test emailing service:**
+
+```bash
+aiosmtpd -n -l localhost:1725 --debug
+```
+
+Go to the given localhost url by `npm run dev`, and you will see a `todo` app, with a lot of features.
+
+> An `npm create` script will soon be available, to create a new fresh project with this template.
+> If you don't want the default `todo` app, you can remove it, and create your own app.
 
 Okay, what now? Obviously, you wanna how to use this template and everything around it.
 
