@@ -10,4 +10,5 @@ urlpatterns = [
     path('auth/', include('authentication.urls')),
     path('home/', include('home.urls')),
     path('todos/', include('todo.urls')),
-] + trigger_pattern
+    *trigger_pattern
+]

@@ -153,7 +153,7 @@ handled by DjangoKit, and it will be proxied to Django.
 For that you have to index the form action in `src/routes/+page.server.ts`,
 
 ```ts
-import {via_route_name} from "@friendofsvelte/django-kit/server/actions";
+import {via_route, via_route_name} from "@friendofsvelte/django-kit/server/actions";
 
 export const actions = via_route_name('create_todo');
 ```
@@ -161,3 +161,71 @@ export const actions = via_route_name('create_todo');
 `via_route_name` is a powerful and dynamic function, you can pass multiple route names and their
 required methods, and it will handle the form submission for you.
 
+It's not just limited to form actions, you can use it for any action, like `GET`, `POST`, `PUT`, `DELETE`.
+
+```ts
+export const actions = via_route_name([
+    {name: 'create_todo', method: 'POST'},
+    {name: 'delete_todo', method: 'DELETE'},
+]);
+```
+
+> **Note**: for `via_route_name` to work you have to install `djagno-kit-fos` in your Django project, and set it up.
+> ```python
+> from django_kit_fos import trigger_pattern
+> urlpatterns = [..., *trigger_pattern]
+> ```
+
+OR,
+
+```ts
+export const actions = via_route(['update',], {prefix: 'todos'})
+```
+
+OR, mixed
+
+```ts
+export const actions = {
+    ...via_route_name([{name: 'create_todo', method: 'POST'}, {name: 'delete_todo', method: 'DELETE'},]),
+    ...via_route(['update',], {prefix: 'todos'})
+}
+```
+
+#### Rendering data
+
+In `src/routes/+page.server.ts`, you can see:
+
+```ts
+export const load: PageServerLoad = async (event) => {
+    if (!event.locals.current_user) {
+        flash_redirect(event.cookies, {
+            alias: 'error',
+            message: 'You need to be logged in to access the dashboard.',
+            message_type: 'error'
+        }, 302, '/login')
+    }
+    return {
+        todos: await get_todos(event)
+    }
+}
+```
+
+Here, `get_todos` is a function which is used to get the todos from the server, and it
+uses `get_paginator` to get the paginated data.
+
+If user is not logged in, it will redirect the user to the login page with an error message.
+
+> **Note**: You can use `flash_redirect` to redirect with a flash message, it's a helper function.
+> Or you can use `redirect` to redirect without a flash message.
+> Or you can use `put_flash` to put a flash message without redirecting,
+> `import {put_flash} from '@friendofsvelte/django-kit'`;
+
+#### Hooks: Authentication and Site data
+
+The feature is there, but the docs is yet to be written, you can see the `hooks.server.ts` file
+for more information.
+
+### Backend - using Django and Djapy
+
+The backend, and it's features, but the docs is yet to be written, you can see the `django_backend` directory
+for more information.
