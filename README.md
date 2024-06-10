@@ -135,7 +135,7 @@ messages to `notifier.toasts` (which you will learn shortly).
 You might want to add a toast notification from the frontend, you can use `notifier` store.
 
 ```ts
-import {add_toast, dismiss_toast_after} from "$lib/notifier.svelte";
+import {add_toast, dismiss_toast_after} from "@friendofsvelte/django-kit/notifier";
 
 add_toast({message: 'Hello World', message_type: 'success',}) // this will add a toast, but won't auto dismiss
 dismiss_toast_after(add_toast({message: 'Hello World', message_type: 'success',})) // this will dismiss the toast
@@ -145,7 +145,7 @@ Here's a simple example of using `notifier` store.
 
 ```svelte
 <script>
-    import {add_toast, dismiss_toast_after} from "$lib/notifier.svelte";
+    import {add_toast, dismiss_toast_after} from "@friendofsvelte/django-kit/notifier";
 </script>
 
 <button onclick={()=>{dismiss_toast_after(add_toast({message: 'Hello World', message_type: 'success',}))}}>
