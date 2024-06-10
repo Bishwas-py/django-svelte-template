@@ -48,7 +48,7 @@ To simplify things, I will start from Svelte part of this template.
 Our frontend is using a lot of magic from the django-kit (npm) library, and
 we might feel it's just pure magic going on here, but that's totally not magic.
 
-Making things, even simple, we should start from the very `+layout.svelte` file.
+Making things, even simple, we should start from the very [+layout.svelte](svelte_frontend%2Fsrc%2Froutes%2F%2Blayout.svelte) file.
 
 #### Flash messages
 
@@ -150,7 +150,7 @@ The most favorite part of this template, is the form actions. Let's have a look 
 `?/create_todo` is a form action, which is a path name (or urlname) for the form action, which is
 handled by DjangoKit, and it will be proxied to Django.
 
-For that you have to index the form action in `src/routes/+page.server.ts`,
+For that you have to index the form action in [src/routes/+page.server.ts](svelte_frontend%2Fsrc%2Froutes%2F%2Bpage.server.ts),
 
 ```ts
 import {via_route, via_route_name} from "@friendofsvelte/django-kit/server/actions";
