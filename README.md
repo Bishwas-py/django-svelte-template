@@ -297,6 +297,8 @@ confirm email, and a lot more.
 
 It is inside `django_backend/` directory, and it's a Django project.
 
+If you django server is running, goto `http://localhost:8000/` for swagger documentation.
+
 > Inside each app, you'll most probably see a schema file where all schemas are defined, and a views file
 > where all views are defined.
 
