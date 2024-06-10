@@ -8,6 +8,24 @@ you need to work with Django's awesome backend, and SvelteKit powerful frontend.
 
 > Note: This templated strictly supports Svelte 5.
 
+## Getting started
+
+To get started, you can simply clone this repository, and start working on it.
+
+```bash
+git clone git@github.com:Bishwas-py/django-svelte-template.git
+```
+
+And if you don't want the default `todo` app, you can remove it, and create your own app.
+
+```bash
+cd django_backend;
+rm -rf todo;
+django-admin startapp your_app_name
+```
+
+An `npm create` script will soon be available, to create a new fresh project with this template.
+
 Okay, what now? Obviously, you wanna how to use this template and everything around it.
 
 So, let's start with:
@@ -48,7 +66,8 @@ To simplify things, I will start from Svelte part of this template.
 Our frontend is using a lot of magic from the django-kit (npm) library, and
 we might feel it's just pure magic going on here, but that's totally not magic.
 
-Making things, even simple, we should start from the very [+layout.svelte](svelte_frontend%2Fsrc%2Froutes%2F%2Blayout.svelte) file.
+Making things, even simple, we should start from the
+very [+layout.svelte](svelte_frontend%2Fsrc%2Froutes%2F%2Blayout.svelte) file.
 
 #### Flash messages
 
@@ -150,7 +169,8 @@ The most favorite part of this template, is the form actions. Let's have a look 
 `?/create_todo` is a form action, which is a path name (or urlname) for the form action, which is
 handled by DjangoKit, and it will be proxied to Django.
 
-For that you have to index the form action in [src/routes/+page.server.ts](svelte_frontend%2Fsrc%2Froutes%2F%2Bpage.server.ts),
+For that you have to index the form action
+in [src/routes/+page.server.ts](svelte_frontend%2Fsrc%2Froutes%2F%2Bpage.server.ts),
 
 ```ts
 import {via_route, via_route_name} from "@friendofsvelte/django-kit/server/actions";
