@@ -54,8 +54,7 @@ Making things, even simple, we should start from the very `+layout.svelte` file.
 
 In `src/+layout.svelte`, you can see:
 
-```sveltehtml
-
+```svelte
 <script>
     import "../app.css"; // for styling, optional: $items and pages are styled using tailwind css
     import "iconify-icon"; // for icons, optional: $items/Flash.svelte uses this
@@ -110,8 +109,7 @@ and `after` submit callback.
 `$items/Error.svelte` is a component which is used to show errors, it filters out the errors
 sent by the server (using Pydantic), and shows them in a nice way.
 
-```sveltehtml
-
+```svelte
 <script lang="ts">
     import Error from "$items/Error.svelte";
 </script>
@@ -142,8 +140,7 @@ Also, `<PutFlash/>` binds every error sent in the following way:
 
 The most favorite part of this template, is the form actions. Let's have a look at our `src/routes/+page.svelte`,
 
-```sveltehtml
-
+```svelte
 <Form action="?/create_todo" method="post" ...>
     ...
 </Form>
@@ -157,6 +154,7 @@ For that you have to index the form action in `src/routes/+page.server.ts`,
 
 ```ts
 import {via_route_name} from "@friendofsvelte/django-kit/server/actions";
+
 export const actions = via_route_name('create_todo');
 ```
 
