@@ -12,12 +12,16 @@
         type?: string,
     } = $props();
     if (!id) id = name;
+    let input_elm: HTMLInputElement;
+    $effect(() => {
+        if (has_err) input_elm.focus();
+    });
 </script>
 
 <div class={className ?? "flex flex-col gap-2"}>
     <div class="inp-wrap" class:has_err>
         <label for="{name}">{text}</label>
-        <input id="{name}" {name} placeholder="iamwho12" {type}/>
+        <input id="{name}" {name} placeholder="iamwho12" {type} bind:this={input_elm}/>
     </div>
     <Error {name} bind:has_err/>
     {#if children}

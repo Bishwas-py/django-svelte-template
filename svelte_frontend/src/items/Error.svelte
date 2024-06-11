@@ -1,5 +1,7 @@
 <script lang="ts">
     import {page} from '$app/stores';
+    import {untrack} from "svelte";
+    import {derived} from "svelte/store";
 
     interface Props {
         name: string,
@@ -46,7 +48,6 @@
         () => {
             const detail = $page.form?.error;
             if ($page.form && $page.form?.inline) {
-                console.log("$page.form.inline", $page.form.inline)
                 let error_msg = $page.form.inline[name];
                 if (error_msg) return [error_msg];
             } else if (detail) {
@@ -58,11 +59,17 @@
         }
     )
 
+    // eslint-disable-next-line no-undef
+    let err_timeout: NodeJS.Timeout;
     $effect(() => {
-        if (inline_text.length) has_err = true;
-        setTimeout(() => {
-            has_err = false;
-        }, 960);
+        const _has_err = inline_text.length > 0;
+        untrack(() => {
+            clearTimeout(err_timeout);
+            has_err = _has_err;
+            err_timeout = setTimeout(() => {
+                has_err = false;
+            }, 1960);
+        });
     });
 </script>
 

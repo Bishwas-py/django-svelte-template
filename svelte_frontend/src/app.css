@@ -13,15 +13,15 @@
     .inp-wrap {
         @apply flex flex-col rounded-md border
         border-neutral-300 shadow-sm focus-within:ring focus-within:ring-cyan-500 focus-within:border-indigo-500
-        dark:bg-neutral-900/80 dark:border-neutral-600 dark:text-neutral-300;
+        dark:bg-neutral-900/80 dark:border-neutral-600 dark:text-neutral-300 duration-500;
     }
 
     .inp-wrap.has_err {
-        @apply border-red-500 dark:border-red-500 focus-within:ring-red-500;
+        @apply border-red-500 dark:border-red-500 focus-within:ring-red-500 text-red-400;
     }
 
     .inp-wrap label, .label {
-        @apply px-2 py-0 font-medium text-neutral-700 dark:text-neutral-300;
+        @apply px-2 py-0 font-medium;
     }
 
     .inp-wrap input, .input {
