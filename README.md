@@ -32,6 +32,12 @@ cd svelte_frontend; npm install;
 npm run dev;
 ```
 
+**Add `.env`, as follows:**
+
+```env
+SECRET_BASE_API=http://localhost:8000
+```
+
 Go to the given localhost url by `npm run dev`, and you will see a `todo` app, with a lot of features.
 
 **Run test emailing service:**
