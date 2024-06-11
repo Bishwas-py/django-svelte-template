@@ -8,7 +8,7 @@ from djapy import Schema
 from djapy.schema import Form
 from pydantic import field_validator, Field, constr, EmailStr
 
-from utils.symbols import attach_message
+MESSAGE_SEPERATOR = '|--|'
 
 email_validator = EmailValidator()
 
@@ -46,7 +46,7 @@ class UserRegisterSchema(Form):
         try:
             validate_password(password)
         except ValidationError as e:
-            raise ValueError(attach_message(e.messages))
+            raise ValueError(MESSAGE_SEPERATOR.join(e.messages))
 
 
 class AuthOutSchema(Schema):
