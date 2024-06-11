@@ -37,6 +37,7 @@ npm run dev;
 ```env
 SECRET_BASE_API=http://localhost:8000
 ```
+> `SECRET_BASE_API` is the base url for the django backend, you can change it accordingly.
 
 Go to the given localhost url by `npm run dev`, and you will see a `todo` app, with a lot of features.
 
