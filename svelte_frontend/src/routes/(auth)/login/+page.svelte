@@ -11,8 +11,8 @@
     <span class="text-gray-500 dark:text-gray-400">Login to your account</span>
 </div>
 <Form action="?/login" method="post" bind:loading class="flex flex-col gap-3">
-    <Input name="username" text="@Username"/>
-    <Input name="password" text="@Password" type="password"/>
+    <Input name="username" text="@Username" placeholder="iamwho12"/>
+    <Input name="password" text="Password" type="password" placeholder="6xist€nC9"/>
     <button type="submit" disabled={loading} class="p-but font-black">
         {#if loading}
             ......
