@@ -1,26 +1,18 @@
 <script lang="ts">
     import Error from "$items/Error.svelte";
     import Form from "$items/Form.svelte";
+    import Input from "$items/Input.svelte";
 
     let loading = $state(false);
 </script>
-
+<div class="flex flex-col gap-0">
+    <h1 class="text-4xl font-bold">Register</h1>
+    <span class="text-gray-500 dark:text-gray-400">Get started with us</span>
+</div>
 <Form action="?/register" method="post" bind:loading class="flex flex-col gap-2">
-    <div class="inp-wrap">
-        <label for="username">Username</label>
-        <input id="username" type="text" name="username" placeholder="username1"/>
-        <Error name="username"/>
-    </div>
-    <div class="inp-wrap">
-        <label for="email">Email</label>
-        <input id="email" type="text" name="email" placeholder="your@mail.com"/>
-        <Error name="email"/>
-    </div>
-    <div class="inp-wrap">
-        <label for="password">Password</label>
-        <input id="password" type="password" name="password" placeholder="Password"/>
-        <Error name="password"/>
-    </div>
+    <Input name="username" text="@Username" placeholder="iamwho12"/>
+    <Input name="email" text="Email" type="email" placeholder="your@mail.com"/>
+    <Input name="password" text="Password" type="password" placeholder="6xist€nC9"/>
     <button type="submit" disabled={loading} class="p-but font-black">
         {#if loading}
             ......

@@ -24,6 +24,6 @@
 
 
 <div class="flex items-center gap-2 justify-between">
-    <a href="/login" class="goto-button f-dotted">Login</a>
+    <a href="#FrontendNotImplented" class="goto-button f-dotted" title="Not Implemented: SvelteKit">Forgot password</a>
     <a href="/register" class="goto-button f-dotted">Register</a>
 </div>
