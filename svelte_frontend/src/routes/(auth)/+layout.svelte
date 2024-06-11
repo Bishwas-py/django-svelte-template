@@ -2,8 +2,10 @@
     let {children} = $props();
 </script>
 
-<div class="h-screen min-w-full flex items-center justify-center">
-    <div class="flex flex-col gap-4 bg-white text-lg dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full min-h-[40vh]">
+<div class="h-screen min-w-full flex items-center justify-center bg-gradient-to-tr
+dark:from-slate-900 dark:via-gray-900 dark:to-zinc-900">
+    <div class="flex flex-col gap-4 bg-white text-lg dark:bg-neutral-950/90
+    px-7 py-8 rounded-lg shadow-lg max-w-md w-full min-h-[50vh]">
         {@render children()}
     </div>
 </div>
