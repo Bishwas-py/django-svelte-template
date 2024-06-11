@@ -184,6 +184,8 @@ and `after` submit callback.
 `$items/Error.svelte` is a component which is used to show errors, it filters out the errors
 sent by the server (using Pydantic), and shows them in a nice way.
 
+https://github.com/Bishwas-py/django-svelte-template/assets/42182303/2910fa0c-a850-4a93-8c93-cc9cca51a473
+
 ```svelte
 <script lang="ts">
     import Error from "$items/Error.svelte";
