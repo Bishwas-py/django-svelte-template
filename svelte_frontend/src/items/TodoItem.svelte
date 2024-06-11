@@ -107,17 +107,17 @@
             <h3 class="text-lg font-bold">Edit todo: {todo.title}</h3>
 
             <input type="hidden" name="todo_id" value={todo.id}/>
-            <div class="input-group">
+            <div class="inp-wrap">
                 <label for="title">Title</label>
                 <input id="title" type="text" name="title" placeholder="What needs to be done?"
                        bind:value={todo.title}/>
             </div>
-            <div class="input-group">
+            <div class="inp-wrap">
                 <label for="completed_at">Completed at:</label>
                 <input id="completed_at" type="datetime-local" name="completed_at"
                        value={dayjs_(todo.completed_at).format('YYYY-MM-DDTHH:mm')}/>
             </div>
-            <div class="input-group">
+            <div class="inp-wrap">
                 <label for="will_complete_at">Will complete at</label>
                 <input id="will_complete_at" type="datetime-local" name="will_complete_at"
                        value={dayjs_(todo.will_complete_at).format('YYYY-MM-DDTHH:mm')}/>

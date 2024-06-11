@@ -1,29 +1,29 @@
 <script lang="ts">
     import Error from "$items/Error.svelte";
     import Form from "$items/Form.svelte";
+    import Input from "$items/Input.svelte";
 
     let loading = $state(false);
 </script>
 
-<Form action="?/login" method="post" bind:loading class="flex flex-col gap-2">
-    <div class="input-group">
-        <label for="username">Username</label>
-        <input id="username" type="text" name="username" placeholder="Username"/>
-        <Error name="username"/>
-    </div>
-    <div class="input-group">
-        <label for="password">Password</label>
-        <input id="password" type="password" name="password" placeholder="Password"/>
-        <Error name="password"/>
-    </div>
-    <button type="submit" disabled={loading} class="submit-button">
+<div class="flex flex-col gap-0">
+    <h1 class="text-4xl font-bold">Login</h1>
+    <span class="text-gray-500 dark:text-gray-400">Login to your account</span>
+</div>
+<Form action="?/login" method="post" bind:loading class="flex flex-col gap-3">
+    <Input name="username" text="@Username"/>
+    <Input name="password" text="@Password" type="password"/>
+    <button type="submit" disabled={loading} class="p-but font-black">
         {#if loading}
             ......
         {:else}
             Login
         {/if}
     </button>
-    <div class="flex">
-        <a href="/register" class="ml-auto text-blue-600 dark:text-blue-300 text-sm hover:text-blue-500">Register</a>
-    </div>
 </Form>
+
+
+<div class="flex items-center gap-2 justify-between">
+    <a href="/login" class="goto-button f-dotted">Login</a>
+    <a href="/register" class="goto-button f-dotted">Register</a>
+</div>

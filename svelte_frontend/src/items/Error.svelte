@@ -5,17 +5,19 @@
         name: string,
         index?: number,
         s_name?: boolean,
-        className?: string
+        className?: string,
+        has_err?: boolean
     }
 
     let {
         name,
-        index = null,
+        index,
+        has_err = $bindable(),
         s_name = false,
         className = ''
     }: Props = $props();
 
-    export type ValidationError = {
+    type ValidationError = {
         type: string;
         loc: ['body', 'data', ...string[]];
         msg: string;
@@ -56,14 +58,10 @@
         }
     )
 
-
-    let shake = $state(false);
     $effect(() => {
-        if (inline_text) {
-            shake = true;
-        }
+        if (inline_text.length) has_err = true;
         setTimeout(() => {
-            shake = false;
+            has_err = false;
         }, 960);
     });
 </script>
@@ -75,7 +73,7 @@
         {/if}
         <div>
             {#each inline_text as text}
-                <small use:use_scroll class:animate-shake={shake}>
+                <small use:use_scroll class:animate-shake={has_err}>
                     {text}
                 </small>
             {/each}
