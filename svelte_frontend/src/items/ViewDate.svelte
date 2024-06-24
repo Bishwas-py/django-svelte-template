@@ -2,7 +2,11 @@
     import {dayjs_} from "$lib";
     import {fade} from "svelte/transition";
 
-    const {date_at, text = 'completed', class: class_ = ''}: {
+    const {
+        date_at,
+        text = 'completed',
+        class: class_ = ''
+    }: {
         date_at: string,
         text: string,
         class?: string

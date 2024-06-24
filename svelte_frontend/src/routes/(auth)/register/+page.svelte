@@ -1,5 +1,4 @@
 <script lang="ts">
-    import Error from "$items/Error.svelte";
     import Form from "$items/Form.svelte";
     import Input from "$items/Input.svelte";
 

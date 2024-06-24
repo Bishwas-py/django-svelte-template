@@ -23,6 +23,13 @@ cd django_backend; python3 -m venv venv; source venv/bin/activate; pip install -
 python manage.py migrate; python manage.py runserver;
 ```
 
+> Do not forget to change your configs in:
+> - [db.py.sample](django_backend%2Fconfig%2Fdb.py.sample), rename/move it to `db.py`
+> - [env.py.sample](django_backend%2Fconfig%2Fenv.py.sample), rename/move it to `env.py`
+> - [mail.py.sample](django_backend%2Fconfig%2Fmail.py.sample), rename/move it to `mail.py`
+> 
+> Edit the files accordingly.
+
 If you django server is running, goto `http://localhost:8000/` for swagger documentation.
 
 **Run sveltekit frontend:**
@@ -37,6 +44,7 @@ npm run dev;
 ```env
 SECRET_BASE_API=http://localhost:8000
 ```
+
 > `SECRET_BASE_API` is the base url for the django backend, you can change it accordingly.
 
 Go to the given localhost url by `npm run dev`, and you will see a `todo` app, with a lot of features.
