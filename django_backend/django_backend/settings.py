@@ -25,7 +25,13 @@ from config.mail import (
 from config.db import DATABASES
 
 from config.env import (
-   DEBUG, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS
+   # SECURITY WARNING: don't run with debug turned on in production!
+   DEBUG,
+   # SECURITY WARNING: keep the secret key used in production secret!
+   SECRET_KEY,
+   # SECURITY WARNING: define the correct hosts in production!
+   ALLOWED_HOSTS,
+   CSRF_TRUSTED_ORIGINS
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -33,11 +39,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pt50ualer8otrcli1@#@nsfqe*$f4mbtp+rug@rkyr^bia$fz!'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 
 # Application definition
 

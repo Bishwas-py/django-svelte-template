@@ -27,6 +27,7 @@ PRODUCTION = False
 ALLOWED_HOSTS = []
 STRIPE_SECRET_KEY = 'sk_test_*'
 STRIPE_WEBHOOK_SECRET_KEY = 'whsec*'
+SECRET_KEY = 'django-insecure-pt50ualer8otrcli1@#@nsfqe*$f4mbtp+rug@rkyr^bia$fz!'
 EOL
 
 # mail.py
