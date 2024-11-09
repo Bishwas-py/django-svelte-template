@@ -5,12 +5,12 @@ from generics.schemas import MessageOut
 
 
 class EmailTimeMessageOut(MessageOut):
-    time_left: int = None
+   time_left: int = None
 
 
 class UsernameOutSchema(Schema):
-    username: str
+   username: str
 
 
 class GetEmailSchema(Schema):
-    email: EmailStr
+   email: EmailStr

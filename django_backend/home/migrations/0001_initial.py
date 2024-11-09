@@ -5,29 +5,28 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
+   initial = True
 
-    initial = True
+   dependencies = [
+      ('sites', '0002_alter_domain_unique'),
+   ]
 
-    dependencies = [
-        ('sites', '0002_alter_domain_unique'),
-    ]
-
-    operations = [
-        migrations.CreateModel(
-            name='SiteData',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=250)),
-                ('subtitle', models.CharField(max_length=250)),
-                ('description', models.TextField()),
-                ('thumbnail', models.ImageField(blank=True, null=True, upload_to='thumbnail/')),
-                ('keywords', models.CharField(blank=True, max_length=500, null=True)),
-                ('ads_on', models.BooleanField(default=False)),
-                ('site', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='sites.site')),
-            ],
-            options={
-                'verbose_name': 'Site Data',
-                'verbose_name_plural': 'Site Data',
-            },
-        ),
-    ]
+   operations = [
+      migrations.CreateModel(
+         name='SiteData',
+         fields=[
+            ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+            ('title', models.CharField(max_length=250)),
+            ('subtitle', models.CharField(max_length=250)),
+            ('description', models.TextField()),
+            ('thumbnail', models.ImageField(blank=True, null=True, upload_to='thumbnail/')),
+            ('keywords', models.CharField(blank=True, max_length=500, null=True)),
+            ('ads_on', models.BooleanField(default=False)),
+            ('site', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='sites.site')),
+         ],
+         options={
+            'verbose_name': 'Site Data',
+            'verbose_name_plural': 'Site Data',
+         },
+      ),
+   ]

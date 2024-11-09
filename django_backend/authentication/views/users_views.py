@@ -9,5 +9,5 @@ TAGS = ["User"]
 
 @djapify
 def get_user_by_username(request, username: str) -> {200: UserSchema}:
-    user = get_user_model().objects.get(username=username)
-    return user
+   user = get_user_model().objects.get(username=username)
+   return user
