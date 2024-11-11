@@ -47,7 +47,7 @@ This function is used to create action triggers for Django's API endpoints via t
 Example: path('do-something/', do_something, name='do_something_view_name'),
 export the actions as via_route_name("do_something_view_name");
  */
-export const callViaRouteName =
+export const call =
   <T extends Partial<Message> = Partial<Message>>(proxyPaths: string | string[] | NamedActionInfo[], initialOptions: Options = {}) => {
     initialOptions = {...default_options, ...initialOptions};
     let actions: Actions = {};
@@ -61,7 +61,7 @@ export const callViaRouteName =
       const action: Actions = {
         [proxyAction.name]: async (event: RequestEvent) => {
           const formData = await event.request.formData();
-          let url = `${initialOptions.djangoBaseApi}/trvun/?url_name=${proxyAction.name}`;
+          let url = `${initialOptions.djangoBaseApi}/.proxy/?url_name=${proxyAction.name}`;
           let options: RequestInit = {method: proxyAction.method};
 
           if (initialOptions.addHeaders) options = {...options, headers: get_headers(event, false)};
