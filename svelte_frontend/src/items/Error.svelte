@@ -1,91 +1,94 @@
+<script lang="ts" module>
+  export interface ErrorProps {
+    name: string,
+    index?: number,
+    s_name?: boolean,
+    className?: string,
+    has_err?: boolean
+  }
+
+  export type ValidationError = {
+    type: string;
+    loc: ['body', 'data', ...string[]];
+    msg: string;
+    ctx?: Record<string, string>;
+  };
+</script>
+
 <script lang="ts">
-    import {page} from '$app/stores';
-    import {untrack} from "svelte";
-    import {derived} from "svelte/store";
+  import {page} from '$app/stores';
+  import {untrack} from "svelte";
 
-    interface Props {
-        name: string,
-        index?: number,
-        s_name?: boolean,
-        className?: string,
-        has_err?: boolean
-    }
-
-    let {
-        name,
-        index,
-        has_err = $bindable(),
-        s_name = false,
-        className = ''
-    }: Props = $props();
-
-    type ValidationError = {
-        type: string;
-        loc: ['body', 'data', ...string[]];
-        msg: string;
-        ctx?: Record<string, string>;
-    };
-
-    function find_error_with_error_loc(
-        error_loc: string,
-        details: ValidationError[],
-        from_index: number | null = null
-    ): ValidationError | undefined {
-        return details.find(detail => {
-            if (from_index === null) {
-                from_index = detail.loc.length - 1;
-            }
-            return detail.loc[from_index] === error_loc;
-        });
-    }
-
-    function use_scroll(node: HTMLElement) {
-        node.scrollIntoView({behavior: 'instant', block: 'center'});
-    }
+  let {
+    name,
+    index,
+    has_err = $bindable(),
+    s_name = false,
+    className = ''
+  }: ErrorProps = $props();
 
 
-    let inline_text = $derived.by(
-        () => {
-            const detail = $page.form?.error;
-            if ($page.form && $page.form?.inline) {
-                let error_msg = $page.form.inline[name];
-                if (error_msg) return [error_msg];
-            } else if (detail) {
-                const error = find_error_with_error_loc(name, detail, index);
-                if (error?.ctx && error.ctx.error) return [error.ctx.error];
-                if (error?.msg) return [error.msg];
-            }
-            return [];
-        }
-    )
-
-    // eslint-disable-next-line no-undef
-    let err_timeout: NodeJS.Timeout;
-    $effect(() => {
-        const _has_err = inline_text.length > 0;
-        untrack(() => {
-            clearTimeout(err_timeout);
-            has_err = _has_err;
-            err_timeout = setTimeout(() => {
-                has_err = false;
-            }, 1960);
-        });
+  function find_error_with_error_loc(
+    error_loc: string,
+    details: ValidationError[],
+    from_index: number | null = null
+  ): ValidationError | undefined {
+    return details.find(detail => {
+      if (from_index === null) {
+        from_index = detail.loc.length - 1;
+      }
+      return detail.loc[from_index] === error_loc;
     });
+  }
+
+  function use_scroll(node: HTMLElement) {
+    node.scrollIntoView({behavior: 'instant', block: 'center'});
+  }
+
+  const detail_err = $derived($page.form?.error);
+  const inline_err = $derived($page.form?.inline);
+
+  function get_inline_error() {
+    if (inline_err) {
+      let error_msg = inline_err[name];
+      if (error_msg) return [error_msg];
+    } else if (detail_err) {
+      const error = find_error_with_error_loc(name, detail_err, index);
+      if (error?.ctx && error.ctx.error) return [error.ctx.error];
+      if (error?.msg) return [error.msg];
+    }
+    return [];
+  }
+
+  const inline_text = $derived.by(get_inline_error);
+
+  // eslint-disable-next-line no-undef
+  let err_timeout: NodeJS.Timeout;
+  $effect(() => {
+    const _has_err = inline_text.length > 0;
+    untrack(() => {
+      clearTimeout(err_timeout);
+      has_err = _has_err;
+      err_timeout = setTimeout(() => {
+        has_err = false;
+      }, 1960);
+    });
+  });
 </script>
 
 {#if inline_text?.length > 0}
-    <div class="error {className}">
-        {#if s_name}
-            <span>{name}: </span>
-        {/if}
-        <div>
-            {#each inline_text as text}
-                <small use:use_scroll class:animate-shake={has_err}>
-                    {text}
-                </small>
-            {/each}
-        </div>
-    </div>
+ <div class="error {className}">
+  {#if s_name}
+   <span>{name}: </span>
+  {/if}
+  <div>
+   {#each inline_text as text}
+    <small use:use_scroll class:animate-shake={has_err}>
+     {text}
+    </small>
+   {/each}
+  </div>
+ </div>
 {/if}
 
 <style>
