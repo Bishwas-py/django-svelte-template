@@ -1,9 +1,8 @@
-import {assign_cookies} from "@friendofsvelte/django-kit/server/utils";
 import type {Handle, RequestEvent} from "@sveltejs/kit";
 import {sequence} from "@sveltejs/kit/hooks";
 import type {User} from "$lib/interfaces/auth";
-import type {SiteData} from "$lib/interfaces/siteData";
-import {assign_headers, get_headers} from "$lib/server/request";
+import type {SiteData} from "$lib/interfaces/site-data";
+import {assign_headers, get_headers, assign_cookies} from "$lib/server/request";
 import {SECRET_BASE_API} from "$env/static/private";
 
 export const handleFetch = async ({request, fetch, event}) => {

@@ -2,7 +2,6 @@
   import {fade} from "svelte/transition";
   import {flip} from "svelte/animate";
   import {quintOut} from "svelte/easing";
-  import {dismiss_toast, notifier} from "@friendofsvelte/django-kit/notifier";
   import BxsCheckCircle from "$icons/BxsCheckCircle.svelte";
   import BxsError from "$icons/BxsError.svelte";
   import BxsErrorCircle from "$icons/BxsErrorCircle.svelte";
@@ -15,6 +14,7 @@
     flashMessageVariants,
     flashActionVariants
   } from '$lib/helpers/variants/flash-variants';
+  import {dismiss_toast, notifier} from "$lib/stores/notifier.svelte";
 
   const icons_ = {
     success: BxsCheckCircle,
@@ -42,7 +42,7 @@
     </h3>
     <button
       class={flashExitButtonVariants({ type: toast.message_type })}
-      on:click={() => dismiss_toast(toast.id)}
+      onclick={() => dismiss_toast(toast.id)}
     >
      <BxsXCircle display class="h-full w-full"/>
     </button>

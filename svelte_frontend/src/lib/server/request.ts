@@ -35,12 +35,14 @@ type GetServerHeaders = (ServerHeaders & {
 
 export const get_headers = (event: RequestEvent, includeContentType = true): GetServerHeaders => {
   const userAgent = event.request.headers.get('User-Agent') || 'SvelteKit(Prime)';
+  const csrfToken = event.cookies.get('csrftoken') || '';
   const headers: GetServerHeaders = {
     'Referer': event.url.pathname,
     'X-Referer-URL': event.url.href,
     'Route-ID': event.route.id || '',
     'Origin': event.url.origin || '',
-    'User-Agent': userAgent
+    'User-Agent': userAgent,
+    'X-CSRFToken': csrfToken,
   };
   if (includeContentType) {
     headers['Content-Type'] = event.request.headers.get('Content-Type') || 'application/json';

@@ -5,6 +5,7 @@
   import ViewDate from "$items/ViewDate.svelte";
   import {tv, type VariantProps} from "tailwind-variants";
   import BiCircleFill from "$icons/BiCircleFill.svelte";
+  import Record from "$items/Record.svelte";
 
   // Props destructuring with type safety
   interface Props {
@@ -177,7 +178,7 @@
     <button
       type="button"
       class={actionButton({ intent: "primary", padding: "left" })}
-      on:click={openPopup}
+      onclick={openPopup}
     >
      edit
     </button>
@@ -189,14 +190,11 @@
 {#if is_edit_popup_enabled}
  <div class={modal()}>
   <Form
-    action="?/todos/update&_sfx=/{todo.id}/"
+    action="?/call&s=/todos/update/{todo.id}/&m=post"
     method="post"
-    after={closePopup}
     class={modalContainer()}
   >
    <h3 class="text-lg font-bold">Edit todo: {todo.title}</h3>
-
-   <input type="hidden" name="todo_id" value={todo.id}/>
 
    <div class={modalInput()}>
     <label for="title">Title</label>
@@ -230,7 +228,7 @@
    </div>
 
    <button type="submit" class={actionButton({ intent: "primary" })}>save</button>
-   <button type="button" class={actionButton({ intent: "danger" })} on:click={closePopup}>cancel</button>
+   <button type="button" class={actionButton({ intent: "danger" })} onclick={closePopup}>cancel</button>
   </Form>
  </div>
 {/if}

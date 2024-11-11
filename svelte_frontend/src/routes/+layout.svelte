@@ -1,7 +1,7 @@
 <script>
     import "../app.css";
-    import PutFlash from "@friendofsvelte/django-kit/components/PutFlash.svelte";
     import Flash from "$items/Flash.svelte";
+    import PutFlash from "$items/PutFlash.svelte";
 
     let {children} = $props();
 </script>

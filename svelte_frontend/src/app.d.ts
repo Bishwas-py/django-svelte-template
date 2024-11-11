@@ -8,7 +8,7 @@ declare global {
     // interface Error {}
     interface Locals {
       current_user: import('$lib/interfaces/auth').User;
-      site_data: import('$lib/interfaces/siteData').SiteData;
+      site_data: import('$lib/interfaces/site-data').SiteData;
     }
 
     // interface PageData {}
@@ -46,8 +46,10 @@ declare global {
   type MessageFlux = {
     message_type?: MessageType
     alias?: string;
-    message?: string;
+    message: string;
   } & ActionPathRequired;
+
+  type BASE_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
   type RedirectStatus = 300 | 301 | 302 | 303 | 304 | 305 | 306 | 307 | 308;
 

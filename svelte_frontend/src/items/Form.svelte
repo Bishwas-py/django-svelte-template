@@ -1,41 +1,65 @@
-<script lang="ts">
-    import {enhance} from "$app/forms";
-    import type {Snippet} from 'svelte'
+<script lang="ts" module>
+  import type {FormActionResult} from '$lib/interfaces';
+  import type {Snippet} from 'svelte';
+  import type {ActionResult} from '@sveltejs/kit';
+  import type {HTMLFormAttributes} from "svelte/elements";
 
-    interface Props {
-        action?: string;
-        loading?: boolean;
-        method?: string;
-        class: string;
-        action_function?: (e: Event) => void;
-        children: Snippet;
-        inval?: boolean,
-        after?: () => void;
-    }
+  export interface FormProps {
+    action?: string;
+    loading?: boolean;
+    method?: HTMLFormAttributes['method'];
+    class?: string;
+    action_function?: () => void;
+    children: Snippet;
+    ivl?: boolean,
+    reset?: boolean,
+    after?: (result: FormActionResult) => void;
+    enctype?: HTMLFormAttributes['enctype'];
+  }
 
-    let {
-        action = '',
-        method = 'post',
-        class: className = '',
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        loading = $bindable(),
-        inval: invalidateAll = true,
-        children,
-        after = () => {
-        }
-    }: Props = $props();
-    let action_function = () => {
-        loading = true;
-        return ({update}: { update: ({invalidateAll}: { invalidateAll: boolean }) => Promise<void> }) => {
-            update({invalidateAll}).finally(async () => {
-                loading = false;
-                after();
-            });
-        };
-    }
-
+  export interface FormActionArgs {
+    result: ActionResult;
+    update: (options: { invalidateAll: boolean; reset?: boolean }) => Promise<void>;
+  }
 </script>
 
-<form {action} {method} use:enhance={action_function} class={className} class:loading>
-    {@render children()}
+<script lang="ts">
+  import {enhance} from '$app/forms';
+
+  let {
+    action = '',
+    method = 'post',
+    class: className = '',
+    loading = $bindable(false),
+    ivl: invalidateAll = true,
+    children,
+    after,
+    reset = true,
+    enctype,
+    action_function = actionFunction
+  }: FormProps = $props();
+
+
+  async function actionFunction() {
+    loading = true;
+
+    return async ({result, update}: FormActionArgs) => {
+      await update({invalidateAll, reset}).finally(async () => {
+        loading = false;
+        if (after && typeof after === 'function') {
+          after(result as unknown as FormActionResult);
+        }
+      });
+    };
+  }
+</script>
+
+<form
+  {action}
+  use:enhance={action_function}
+  {method}
+  class={className}
+  class:loading
+  {enctype}>
+ {@render children()}
 </form>

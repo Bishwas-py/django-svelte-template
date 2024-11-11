@@ -1,112 +1,155 @@
-import {type Actions, fail, redirect, type RequestEvent} from '@sveltejs/kit';
+import {type Actions, fail, redirect, type RequestEvent, type ActionFailure} from '@sveltejs/kit';
 import {assign_cookies, get_headers} from '$lib/server/request';
 import {putFlash} from '$lib/server/flash.js';
 import {SERVER_ERROR_500} from '$lib/defaults/status';
 import {SERVER_ERROR_MSG} from '$lib/defaults/messages';
-import {Prox} from "$lib/interfaces/proxy";
+import {ReMod} from "$lib/interfaces/repl-modes";
 import {SECRET_BASE_API} from "$env/static/private";
 
-export type BASE_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE';
 export type NamedActionInfo = {
-  name: string,
-  method: BASE_METHOD,
-  allowCookies?: boolean
+  name: string;
+  method: BASE_METHOD;
+  allowCookies?: boolean;
+  direct?: boolean;
 }
 
-type Options = { djangoBaseApi?: string, allowCookies?: boolean, addHeaders?: boolean };
+type Options = {
+  djangoBaseApi?: string;
+  allowCookies?: boolean;
+  addHeaders?: boolean;
+}
 
-const default_options = {
+type RequestOptions = {
+  url: string;
+  method: BASE_METHOD;
+  formData: FormData;
+  event: RequestEvent;
+  allowCookies?: boolean;
+  addHeaders?: boolean;
+}
+
+// Define specific return type for SvelteKit actions
+type ActionReturn = Promise<ActionFailure<Message> | { success: true; data: Message }>;
+
+const DEFAULT_OPTIONS: Options = {
   djangoBaseApi: SECRET_BASE_API,
   allowCookies: true,
   addHeaders: true
-} as Options;
-
-const formDataToString = (formData: FormData) => {
-  const entries = formData.entries();
-  let result = '';
-  for (const [key, value] of entries) {
-    result += `${key}=${value}&`;
-  }
-  return result;
 };
 
-const triggerFlashMessage = (event: RequestEvent, data?: Partial<Message>) => {
-  if (
-    typeof data?.redirect === 'string' &&
-    typeof data?.message === 'string') {
+const formDataToString = (formData: FormData): string =>
+  Array.from(formData.entries())
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
+
+const triggerFlashMessage = (event: RequestEvent, data?: Partial<Message>): void => {
+  if (typeof data?.redirect === 'string' && typeof data?.message === 'string') {
     const flashMessage: FlashMessage = {
       ...data as Message,
-      alias: data.alias || 'default_alias', // Ensure alias is provided
+      alias: data.alias || 'default_alias',
       path: data.redirect
     };
     putFlash(event.cookies, flashMessage);
-    redirect(303, flashMessage.path);
+    throw redirect(303, flashMessage.path);
   }
 };
 
-/*
-This function is used to create action triggers for Django's API endpoints via their names.
-Example: path('do-something/', do_something, name='do_something_view_name'),
-export the actions as via_route_name("do_something_view_name");
- */
-export const proxy = <T extends Partial<Message> = Partial<Message>>(
+async function handleRequest(
+  {
+    url,
+    method,
+    formData,
+    event,
+    allowCookies,
+    addHeaders
+  }: RequestOptions): ActionReturn {
+  const finalUrl = (method === 'GET' || method === 'DELETE')
+    ? `${url}&${formDataToString(formData)}`
+    : url;
+
+  const options: RequestInit = {
+    method,
+    ...(addHeaders && {headers: get_headers(event, false)}),
+    ...((['POST', 'PUT'].includes(method.toUpperCase())) && {body: formData})
+  };
+
+  try {
+    const response = await event.fetch(finalUrl, options);
+
+    if (allowCookies) {
+      assign_cookies(event, response);
+    }
+
+    if (response.status === 204) {
+      return {success: true, data: {} as Message};
+    }
+
+    const data = await response.json() as Message;
+    triggerFlashMessage(event, data);
+
+    return response.ok
+      ? {success: true, data}
+      : fail(response.status, data);
+  } catch (e) {
+    if (e instanceof Response) {
+      throw e; // Rethrow redirect responses
+    }
+    console.error(`Proxy call error for URL ${url}:`, e);
+    return fail(SERVER_ERROR_500, SERVER_ERROR_MSG);
+  }
+}
+
+export const repl = (
   proxyPaths: string | string[] | NamedActionInfo[],
   initialOptions: Options = {}
-) => {
-  initialOptions = {...default_options, ...initialOptions};
-  let actions: Actions = {};
-  if (typeof proxyPaths === 'string') {
-    proxyPaths = [proxyPaths];
-  }
-  proxyPaths.map((proxyAction) => {
-    if (typeof proxyAction === 'string') {
-      proxyAction = {name: proxyAction, method: 'POST', allowCookies: false};
-    }
-    const action: Actions = {
-      [proxyAction.name]: async (event: RequestEvent) => {
-        const formData = await event.request.formData();
-        const proxyParamsArray = event.url.searchParams.get(Prox.PARAMS);
-        let url = `${initialOptions.djangoBaseApi}/${Prox.NAME}?${Prox.URL_NAME}=${proxyAction.name}`;
-        if (proxyParamsArray) {
-          url = `${url}&params=${proxyParamsArray}`;
-        }
-        let options: RequestInit = {method: proxyAction.method};
+): Actions => {
+  const options = {...DEFAULT_OPTIONS, ...initialOptions};
+  const actions: Actions = {};
 
-        if (initialOptions.addHeaders) options = {...options, headers: get_headers(event, false)};
+  // Convert string input to NamedActionInfo array
+  const normalizedPaths: NamedActionInfo[] = (Array.isArray(proxyPaths) ? proxyPaths : [proxyPaths])
+    .map(path => typeof path === 'string'
+      ? {name: path, method: 'POST' as BASE_METHOD, allowCookies: false}
+      : path
+    );
 
-        if (proxyAction.method === 'POST' || proxyAction.method === 'PUT') {
-          options = {...options, body: formData};
-        } else {
-          url = `${url}&${formDataToString(formData)}`;
-        }
+  // Add named actions
+  for (const proxyAction of normalizedPaths) {
+    actions[proxyAction.name] = async (event: RequestEvent): ActionReturn => {
+      const formData = await event.request.formData();
+      const url = `${options.djangoBaseApi}/${ReMod.NAME}?${ReMod.URL_NAME}=${proxyAction.name}`;
 
-        let response: Response;
-        let data: T = {} as T;
-        try {
-          response = await event.fetch(url, options);
-          if (proxyAction.allowCookies || initialOptions.allowCookies) {
-            assign_cookies(event, response);
-          }
-          if (response.status === 204) {
-            return;
-          }
-          data = await response.json();
-        } catch (e) {
-          console.error(`Proxy call error \`${proxyAction.name}\`:`, e);
-          return fail(SERVER_ERROR_500, SERVER_ERROR_MSG);
-        }
-
-        // Check if response has 'redirect' and 'message' properties and handle accordingly
-        triggerFlashMessage(event, data);
-
-        if (response.ok) {
-          return data;
-        }
-        return fail(response.status, data);
-      }
+      return handleRequest({
+        url,
+        method: proxyAction.method,
+        formData,
+        event,
+        allowCookies: proxyAction.allowCookies ?? options.allowCookies,
+        addHeaders: options.addHeaders
+      });
     };
-    actions = {...actions, ...action};
-  });
+  }
+
+  // Add generic 'call' action
+  actions.call = async (event: RequestEvent): ActionReturn => {
+    const initUrl = event.url.searchParams.get('s');
+    const method = event.url.searchParams.get('m') as BASE_METHOD;
+    if (!initUrl || !method) {
+      return fail(400, {message: 'Missing required parameters'} as Message);
+    }
+
+    const formData = await event.request.formData();
+    const url = `${SECRET_BASE_API}${initUrl}`;
+
+    return handleRequest({
+      url,
+      method,
+      formData,
+      event,
+      allowCookies: options.allowCookies,
+      addHeaders: options.addHeaders
+    });
+  };
+
   return actions;
 };
-

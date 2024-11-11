@@ -1,4 +1,3 @@
-import {via_route_name} from "@friendofsvelte/django-kit/server/actions";
+import {repl} from "$lib/server/repl";
 
-const allow_cookies = true;
-export const actions = via_route_name('register', {allow_cookies})
+export const actions = repl('register')

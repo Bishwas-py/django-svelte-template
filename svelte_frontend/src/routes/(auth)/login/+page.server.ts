@@ -1,3 +1,3 @@
-import {proxy} from "$lib/server/proxy";
+import {repl} from "$lib/server/repl";
 
-export const actions = proxy('login')
+export const actions = repl('login')

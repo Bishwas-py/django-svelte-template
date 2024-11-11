@@ -1,5 +1,4 @@
-export enum Prox {
+export enum ReMod {
   NAME = ".proxy",
-  PARAMS = "q-params-001",
   URL_NAME = "url_name",
 }

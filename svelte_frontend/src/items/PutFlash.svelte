@@ -2,8 +2,7 @@
   import {page} from '$app/stores';
   import {parse} from 'cookie';
   import {afterNavigate} from '$app/navigation';
-  import type {FlashMessage, Message, MessageFlux,} from "$lib/types.js";
-  import {add_toast, dismiss_toast_after} from "$lib/notifier.svelte.js";
+  import {add_toast, dismiss_toast_after} from "$lib/stores/notifier.svelte";
   import {untrack} from "svelte";
 
   function flux_message_to_proper(msg_source: MessageFlux) {
@@ -23,8 +22,8 @@
 
   $effect(() => {
     trigger_message($page.form);
-    trigger_message($page.data);
-    trigger_message($page.error);
+    trigger_message($page.data as unknown as MessageFlux);
+    trigger_message($page.error as unknown as MessageFlux);
   });
 
   function assign_flash_message() {
