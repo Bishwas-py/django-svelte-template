@@ -3,74 +3,154 @@
   import Form from "$items/Form.svelte";
   import type {Todo} from "$lib/interfaces/todos";
   import ViewDate from "$items/ViewDate.svelte";
+  import {tv, type VariantProps} from "tailwind-variants";
 
-  let {todo}: { todo: Todo } = $props();
-  let is_edit_popup_enabled = $state(false);
-
-  function on_keydown(event: KeyboardEvent) {
-    if (event.key === "Escape") {
-      is_edit_popup_enabled = false;
-    }
+  // Props destructuring with type safety
+  interface Props {
+    todo: Todo;
   }
 
-  let todo_status = $derived.by(() => {
-    const now = dayjs_();
-    if (todo.completed_at && todo.will_complete_at) {
-      if (dayjs_(todo.completed_at).isBefore(dayjs_(todo.will_complete_at))) {
-        return {
-          text: "Exceptional! You completed the task ahead of the deadline.",
-          color: "green-500"
-        };
-      } else if (dayjs_(todo.completed_at).isSame(dayjs_(todo.will_complete_at))) {
-        // return "Well done! You completed the task right on schedule.";
-        return {
-          text: "Well done! You completed the task right on schedule.",
-          color: "green-500"
-        };
-      } else {
-        // return "The task has been completed, albeit past the due date.";
-        return {
-          text: "The task has been completed, albeit past the due date.",
-          color: "red-500"
-        };
+  let {todo} = $props<Props>();
+
+  // State management
+  let is_edit_popup_enabled = $state(false);
+
+  // Tailwind Variants Definitions
+  const todoCard = tv({
+    base: "flex flex-row items-center gap-3 shadow rounded p-3 w-full h-full",
+    variants: {
+      theme: {
+        light: "bg-white",
+        dark: "bg-neutral-950/50"
       }
-    } else if (todo.will_complete_at && dayjs_(todo.will_complete_at).isBefore(now)) {
-      // return "You were supposed to complete this task. It's now overdue.";
-      return {
-        text: "You were supposed to complete this task. It's now overdue.",
-        color: "red-500"
-      };
-    } else if (todo.will_complete_at && dayjs_(todo.will_complete_at).isAfter(now)) {
-      // return `You have until ${dayjs_(todo.will_complete_at).fromNow()} to complete the task.`;
-      return {
-        text: `You have until ${dayjs_(todo.will_complete_at).fromNow()} to complete the task.`,
-        color: "blue-500"
-      };
+    },
+    defaultVariants: {
+      theme: "light"
     }
-    // return "The task has no deadline and is currently not completed.";
-    return {
-      text: "The task has no deadline and is currently not completed.",
-      color: "gray-500"
-    };
   });
+
+  const todoStatus = tv({
+    base: "text-xs border-l-4 pl-2",
+    variants: {
+      status: {
+        success: "text-green-500 border-green-500",
+        error: "text-red-500 border-red-500",
+        warning: "text-blue-500 border-blue-500",
+        neutral: "text-gray-500 border-gray-500"
+      }
+    },
+    defaultVariants: {
+      status: "neutral"
+    }
+  });
+
+  const actionButton = tv({
+    base: "text-xs",
+    variants: {
+      intent: {
+        primary: "text-blue-500",
+        danger: "text-red-500"
+      },
+      padding: {
+        left: "pl-2",
+        none: ""
+      }
+    },
+    defaultVariants: {
+      padding: "none"
+    }
+  });
+
+  const modal = tv({
+    base: "fixed inset-0 bg-black/50 flex justify-center items-center backdrop-blur",
+    slots: {
+      container: "flex flex-col gap-2 bg-white dark:bg-neutral-950 shadow rounded p-3 w-full max-w-xl outline outline-4 outline-sky-500/40",
+      input: "inp-wrap"
+    }
+  });
+
+  // Constants for status messages
+  const STATUS = {
+    AHEAD: {
+      text: "Exceptional! You completed the task ahead of the deadline.",
+      variant: "success" as const
+    },
+    ON_TIME: {
+      text: "Well done! You completed the task right on schedule.",
+      variant: "success" as const
+    },
+    LATE: {
+      text: "The task has been completed, albeit past the due date.",
+      variant: "error" as const
+    },
+    OVERDUE: {
+      text: "You were supposed to complete this task. It's now overdue.",
+      variant: "error" as const
+    },
+    PENDING: {
+      text: "The task has no deadline and is currently not completed.",
+      variant: "neutral" as const
+    }
+  };
+
+  // Memoized current time
+  const now = $derived(() => dayjs_());
+
+  // Optimized status calculation with early returns and memoization
+  let todo_status = $derived.by(() => {
+    const {completed_at, will_complete_at} = todo;
+
+    if (!completed_at || !will_complete_at) {
+      if (!will_complete_at) return STATUS.PENDING;
+      return dayjs_(will_complete_at).isBefore(now())
+        ? STATUS.OVERDUE
+        : {
+          text: `You have until ${dayjs_(will_complete_at).fromNow()} to complete the task.`,
+          variant: "warning" as const
+        };
+    }
+
+    const completedDate = dayjs_(completed_at);
+    const deadlineDate = dayjs_(will_complete_at);
+
+    if (completedDate.isBefore(deadlineDate)) return STATUS.AHEAD;
+    if (completedDate.isSame(deadlineDate)) return STATUS.ON_TIME;
+    return STATUS.LATE;
+  });
+
+  // Event handlers
+  const closePopup = () => is_edit_popup_enabled = false;
+  const openPopup = () => is_edit_popup_enabled = true;
+
+  function on_keydown(event: KeyboardEvent) {
+    if (event.key === "Escape") closePopup();
+  }
+
+  // Memoized date formatting
+  const created_at_formatted = $derived({
+    relative: dayjs_(todo.created_at).fromNow(),
+    full: dayjs_(todo.created_at).format('YYYY, MMMM D, dddd, HH:mm:ss')
+  });
+
+  const {container: modalContainer, input: modalInput} = modal();
 </script>
 
 <svelte:window on:keydown={on_keydown}/>
 
-
-<Form class="flex flex-row items-center gap-3 bg-white dark:bg-neutral-950/50 shadow
-            rounded p-3 w-full h-full">
- <iconify-icon icon="bi:circle-fill" class="text-blue-500 w-4"/>
+<Form class={todoCard({ theme: "dark", class: "dark" })}>
+ <iconify-icon icon="bi:circle-fill" class="text-blue-500 w-4"></iconify-icon>
  <input type="hidden" name="todo_id" value={todo.id}/>
+
  <div class="w-full">
   <div class="flex flex-wrap justify-between items-center w-full">
    <h3 class="text-lg font-bold">{todo.title}</h3>
    <span
      class="text-neutral-600 dark:text-neutral-400 text-xs"
-     title="{dayjs_(todo.created_at).format('YYYY, MMMM D, dddd, HH:mm:ss')}">
-                {dayjs_(todo.created_at).fromNow()}
-            </span>
+     title={created_at_formatted.full}>
+        {created_at_formatted.relative}
+      </span>
   </div>
+
   <div class="flex flex-col w-full">
    <div class="flex flex-col justify-between">
     <div class="flex flex-wrap flex-row justify-between gap-1 sm:gap-2">
@@ -80,13 +160,25 @@
      <ViewDate date_at={todo.will_complete_at} text="(will complete)" class="text-purple-500 text-xs"/>
     </div>
 
-    <blockquote class="text-xs text-{todo_status.color} border-l-4 border-{todo_status.color} pl-2">
+    <blockquote class={todoStatus({ status: todo_status.variant })}>
      {todo_status.text}
     </blockquote>
    </div>
+
    <div class="text-xs flex flex-wrap flex-row gap-1 md:gap-2 ml-auto justify-between">
-    <button type="submit" class="text-red-500" formaction="?/delete_todo">delete</button>
-    <button type="button" class="text-blue-500 pl-2" onclick={()=>{is_edit_popup_enabled=true}}>edit
+    <button
+      type="submit"
+      class={actionButton({ intent: "danger" })}
+      formaction="?/delete_todo"
+    >
+     delete
+    </button>
+    <button
+      type="button"
+      class={actionButton({ intent: "primary", padding: "left" })}
+      on:click={openPopup}
+    >
+     edit
     </button>
    </div>
   </div>
@@ -94,35 +186,50 @@
 </Form>
 
 {#if is_edit_popup_enabled}
- <div class="fixed inset-0 bg-black/50 flex justify-center items-center backdrop-blur">
-  <Form action="?/todos/update&_sfx=/{todo.id}/" method="post"
-        after={() => is_edit_popup_enabled = false}
-        class="flex flex-col gap-2 bg-white dark:bg-neutral-950 shadow rounded p-3 w-full max-w-xl outline outline-4 outline-sky-500/40">
-   <!--
-   `_sfx`  here is basically a suffix that will be attached to /todos/update/; making it /todos/update/{todo.id}/
-   the info will be later sent to the server (django) to know which todo to update
-   -->
-
+ <div class={modal()}>
+  <Form
+    action="?/todos/update&_sfx=/{todo.id}/"
+    method="post"
+    after={closePopup}
+    class={modalContainer()}
+  >
    <h3 class="text-lg font-bold">Edit todo: {todo.title}</h3>
 
    <input type="hidden" name="todo_id" value={todo.id}/>
-   <div class="inp-wrap">
+
+   <div class={modalInput()}>
     <label for="title">Title</label>
-    <input id="title" type="text" name="title" placeholder="What needs to be done?"
-           bind:value={todo.title}/>
+    <input
+      id="title"
+      type="text"
+      name="title"
+      placeholder="What needs to be done?"
+      bind:value={todo.title}
+    />
    </div>
-   <div class="inp-wrap">
+
+   <div class={modalInput()}>
     <label for="completed_at">Completed at:</label>
-    <input id="completed_at" type="datetime-local" name="completed_at"
-           value={dayjs_(todo.completed_at).format('YYYY-MM-DDTHH:mm')}/>
+    <input
+      id="completed_at"
+      type="datetime-local"
+      name="completed_at"
+      value={dayjs_(todo.completed_at).format('YYYY-MM-DDTHH:mm')}
+    />
    </div>
-   <div class="inp-wrap">
+
+   <div class={modalInput()}>
     <label for="will_complete_at">Will complete at</label>
-    <input id="will_complete_at" type="datetime-local" name="will_complete_at"
-           value={dayjs_(todo.will_complete_at).format('YYYY-MM-DDTHH:mm')}/>
+    <input
+      id="will_complete_at"
+      type="datetime-local"
+      name="will_complete_at"
+      value={dayjs_(todo.will_complete_at).format('YYYY-MM-DDTHH:mm')}
+    />
    </div>
-   <button type="submit" class="text-blue-500">save</button>
-   <button type="button" class="text-red-500" onclick={()=>{is_edit_popup_enabled=false}}>cancel</button>
+
+   <button type="submit" class={actionButton({ intent: "primary" })}>save</button>
+   <button type="button" class={actionButton({ intent: "danger" })} on:click={closePopup}>cancel</button>
   </Form>
  </div>
 {/if}
