@@ -10,5 +10,5 @@ urlpatterns = [
    path('auth/', include('authentication.urls')),
    path('home/', include('home.urls')),
    path('todos/', include('todo.urls')),
-   path('.proxy', proxy, name='proxy'),
+   path('.proxy', proxy),
 ]
