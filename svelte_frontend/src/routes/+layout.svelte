@@ -1,6 +1,5 @@
 <script>
     import "../app.css";
-    import "iconify-icon";
     import PutFlash from "@friendofsvelte/django-kit/components/PutFlash.svelte";
     import Flash from "$items/Flash.svelte";
 

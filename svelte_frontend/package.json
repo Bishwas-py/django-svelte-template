@@ -35,7 +35,6 @@
     "@friendofsvelte/django-kit": "^0.0.1-dev.120",
     "dayjs": "^1.11.11",
     "eslint": "^8.57.1",
-    "iconify-icon": "^2.1.0",
     "tailwind-variants": "^0.2.1"
   }
 }
