@@ -29,7 +29,7 @@ type RequestOptions = {
 }
 
 // Define specific return type for SvelteKit actions
-type ActionReturn = Promise<ActionFailure<Message> | { success: true; data: Message }>;
+type ActionReturn = Promise<ActionFailure<Message> | Partial<Message>>;
 
 const DEFAULT_OPTIONS: Options = {
   djangoBaseApi: SECRET_BASE_API,
@@ -81,10 +81,10 @@ async function handleRequest(
     }
 
     if (response.status === 204) {
-      return {success: true, data: {} as Message};
+      return {};
     }
 
-    const data = await response.json() as Message;
+    const data = await response.json();
     triggerFlashMessage(event, data);
 
     return response.ok
