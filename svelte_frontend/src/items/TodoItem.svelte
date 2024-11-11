@@ -4,6 +4,7 @@
   import type {Todo} from "$lib/interfaces/todos";
   import ViewDate from "$items/ViewDate.svelte";
   import {tv, type VariantProps} from "tailwind-variants";
+  import BiCircleFill from "$icons/BiCircleFill.svelte";
 
   // Props destructuring with type safety
   interface Props {
@@ -138,7 +139,7 @@
 <svelte:window on:keydown={on_keydown}/>
 
 <Form class={todoCard({ theme: "dark", class: "dark" })}>
- <iconify-icon icon="bi:circle-fill" class="text-blue-500 w-4"></iconify-icon>
+ <BiCircleFill class="text-blue-500 w-4" display/>
  <input type="hidden" name="todo_id" value={todo.id}/>
 
  <div class="w-full">
