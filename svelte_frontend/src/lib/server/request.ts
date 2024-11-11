@@ -55,20 +55,3 @@ export const assign_headers = (request: Request, headers: ServerHeaders) => {
     }
   });
 };
-
-export const req = async <T = unknown>(
-  requestPromise: Promise<T>,
-  optionsOrAction: FetchOptions | string = DEFAULT_FETCH_OPTIONS
-) => {
-  try {
-    return (await requestPromise) as T;
-  } catch (e) {
-    // Errors: Network failure, invalid URL, CORS (browser), AbortError, SSL issues (Node.js), redirect loops
-    const options = get_opts(optionsOrAction);
-    console.error(`Request error fetching data ${options.actionName}: `, e);
-    if (!options.raiseError) {
-      error(options.statusCode, `Error loading: ${options.actionName}.`); // LANG: loading means request
-    }
-    return;
-  }
-};

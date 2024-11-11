@@ -1,5 +1,5 @@
 import {type Actions, fail, redirect, type RequestEvent} from '@sveltejs/kit';
-import {assignCookies, getHeaders} from '$lib/server/request';
+import {assign_cookies, get_headers} from '$lib/server/request';
 import {putFlash} from '$lib/server/flash.js';
 import {SERVER_ERROR_500} from '$lib/defaults/status';
 import {SERVER_ERROR_MSG} from '$lib/defaults/messages';
@@ -64,7 +64,7 @@ export const callViaRouteName =
           let url = `${initialOptions.djangoBaseApi}/trvun/?url_name=${proxyAction.name}`;
           let options: RequestInit = {method: proxyAction.method};
 
-          if (initialOptions.addHeaders) options = {...options, headers: getHeaders(event, false)};
+          if (initialOptions.addHeaders) options = {...options, headers: get_headers(event, false)};
 
           if (proxyAction.method === 'POST' || proxyAction.method === 'PUT') {
             options = {...options, body: formData};
@@ -77,7 +77,7 @@ export const callViaRouteName =
           try {
             response = await event.fetch(url, options);
             if (proxyAction.allowCookies || initialOptions.allowCookies) {
-              assignCookies(event, response);
+              assign_cookies(event, response);
             }
             if (response.status === 204) {
               return;
