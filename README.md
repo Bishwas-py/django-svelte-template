@@ -52,6 +52,7 @@ Go to the given localhost url by `npm run dev`, and you will see a `todo` app, w
 **Run test emailing service:**
 
 ```bash
+pip install aiosmtpd # if not installed
 aiosmtpd -n -l localhost:1725 --debug
 ```
 
