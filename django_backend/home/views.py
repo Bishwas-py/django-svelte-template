@@ -8,7 +8,7 @@ from home.schema import InitDataSchema
 @ensure_csrf_cookie
 @djapify
 def get_init_data(request) -> {200: InitDataSchema}:
-   site = Site.objects.get_current(request)
+   site = Site.objects.first()
    return {
       "site_data": site.sitedata,
       "current_user": request.user if request.user.is_authenticated else None
