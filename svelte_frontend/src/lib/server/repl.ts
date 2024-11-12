@@ -28,7 +28,6 @@ type RequestOptions = {
   addHeaders?: boolean;
 }
 
-// Define specific return type for SvelteKit actions
 type ActionReturn = Promise<ActionFailure<Message> | Partial<Message>>;
 
 const DEFAULT_OPTIONS: Options = {
@@ -69,7 +68,7 @@ function constructRequestUrl(url: string, method: string, formData: FormData): s
   return queryString ? `${url}${separator}${queryString}` : url;
 }
 
-async function handleRequest(
+async function r_push(
   {
     url,
     method,
@@ -92,6 +91,8 @@ async function handleRequest(
   let response;
   let data;
 
+  console.log(`[REPL] Fetching ${method} ${finalUrl}`);
+
   try {
     response = await event.fetch(finalUrl, options);
     if (allowCookies) {
@@ -101,20 +102,34 @@ async function handleRequest(
       return {};
     }
     data = await response.json();
+    console.log(`[REPL] Response for ${method} ${finalUrl}:`, data);
   } catch (e) {
     if (e instanceof Response) {
-      throw e; // Rethrow redirect responses
+      throw e;
     }
-    console.error(`Proxy call error for URL ${url}:`, e);
+    console.error(`[REPL] Error for ${method} ${finalUrl}:`, e);
     return fail(SERVER_ERROR_500, SERVER_ERROR_MSG);
   }
 
-  // Move triggerFlashMessage outside try-catch
   triggerFlashMessage(event, data);
 
   return response.ok
     ? data
     : fail(response.status, {...data, uniq});
+}
+
+function normalizeProxyPaths(proxyPaths: string | string[] | NamedActionInfo[]): NamedActionInfo[] {
+  const pathsArray = Array.isArray(proxyPaths) ? proxyPaths : [proxyPaths];
+
+  return pathsArray.map(path =>
+    typeof path === 'string'
+      ? {
+        name: path,
+        method: 'POST' as BASE_METHOD,
+        allowCookies: true
+      }
+      : path
+  );
 }
 
 export const repl = (
@@ -124,20 +139,16 @@ export const repl = (
   const options = {...DEFAULT_OPTIONS, ...initialOptions};
   const actions: Actions = {};
 
-  // Convert string input to NamedActionInfo array
-  const normalizedPaths: NamedActionInfo[] = (Array.isArray(proxyPaths) ? proxyPaths : [proxyPaths])
-    .map(path => typeof path === 'string'
-      ? {name: path, method: 'POST' as BASE_METHOD, allowCookies: false}
-      : path
-    );
+  const normalizedPaths = normalizeProxyPaths(proxyPaths);
 
-  // Add named actions
+  // Create actions for each path
   for (const proxyAction of normalizedPaths) {
     actions[proxyAction.name] = async (event: RequestEvent): ActionReturn => {
       const formData = await event.request.formData();
       const url = `${options.djangoBaseApi}/${ReMod.NAME}?${ReMod.URL_NAME}=${proxyAction.name}`;
+      console.log(proxyAction.allowCookies, options.allowCookies);
 
-      return handleRequest({
+      return r_push({
         url,
         method: proxyAction.method,
         formData,
@@ -148,7 +159,7 @@ export const repl = (
     };
   }
 
-  // Add generic 'call' action
+  // Generic 'call' action
   actions.call = async (event: RequestEvent): ActionReturn => {
     const initUrl = event.url.searchParams.get('s');
     const method = event.url.searchParams.get('m') as BASE_METHOD;
@@ -159,7 +170,7 @@ export const repl = (
     const formData = await event.request.formData();
     const url = `${SECRET_BASE_API}${initUrl}`;
 
-    return handleRequest({
+    return r_push({
       url,
       method,
       formData,
