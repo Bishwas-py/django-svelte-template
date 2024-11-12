@@ -10,7 +10,7 @@
     method?: HTMLFormAttributes['method'];
     class?: string;
     action_function?: () => void;
-    children: Snippet;
+    children: Snippet<[number]>;
     ivl?: boolean,
     reset?: boolean,
     after?: (result: FormActionResult) => void;
@@ -65,6 +65,6 @@
   class={className}
   class:loading
   {enctype}>
- {@render children()}
+ {@render children(uniq)}
  <input type="hidden" name="uniq" value="{uniq}"/>
 </form>
