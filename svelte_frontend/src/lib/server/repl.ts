@@ -54,6 +54,21 @@ const triggerFlashMessage = (event: RequestEvent, data?: Partial<Message>): void
   }
 };
 
+function constructRequestUrl(url: string, method: string, formData: FormData): string {
+  const isQueryMethod = ['GET', 'DELETE'].includes(method.toUpperCase());
+
+  if (!isQueryMethod) {
+    return url;
+  }
+
+  const queryString = formDataToString(formData);
+  // Check if the URL already has query parameters
+  const separator = url.includes('?') ? '&' : '?';
+
+  // Only append formData if it's not empty
+  return queryString ? `${url}${separator}${queryString}` : url;
+}
+
 async function handleRequest(
   {
     url,
@@ -65,9 +80,8 @@ async function handleRequest(
   }: RequestOptions): ActionReturn {
   const uniq = formData.get('uniq');
   formData.delete('uniq');
-  const finalUrl = (method === 'GET' || method === 'DELETE')
-    ? `${url}&${formDataToString(formData)}`
-    : url;
+
+  const finalUrl = constructRequestUrl(url, method, formData);
 
   const options: RequestInit = {
     method,
@@ -75,23 +89,18 @@ async function handleRequest(
     ...((['POST', 'PUT'].includes(method.toUpperCase())) && {body: formData})
   };
 
-  try {
-    const response = await event.fetch(finalUrl, options);
+  let response;
+  let data;
 
+  try {
+    response = await event.fetch(finalUrl, options);
     if (allowCookies) {
       assign_cookies(event, response);
     }
-
     if (response.status === 204) {
       return {};
     }
-
-    const data = await response.json();
-    triggerFlashMessage(event, data);
-
-    return response.ok
-      ? data
-      : fail(response.status, {...data, uniq});
+    data = await response.json();
   } catch (e) {
     if (e instanceof Response) {
       throw e; // Rethrow redirect responses
@@ -99,6 +108,13 @@ async function handleRequest(
     console.error(`Proxy call error for URL ${url}:`, e);
     return fail(SERVER_ERROR_500, SERVER_ERROR_MSG);
   }
+
+  // Move triggerFlashMessage outside try-catch
+  triggerFlashMessage(event, data);
+
+  return response.ok
+    ? data
+    : fail(response.status, {...data, uniq});
 }
 
 export const repl = (

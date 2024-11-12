@@ -69,7 +69,7 @@
   let err_timeout: NodeJS.Timeout;
   $effect(() => {
     console.log(formUniq, uniq)
-    const _has_err = inline_text.length > 0 && formUniq === uniq;
+    const _has_err = inline_text.length > 0 && formUniq === String(uniq);
     untrack(() => {
       clearTimeout(err_timeout);
       has_err = _has_err;
@@ -80,7 +80,7 @@
   });
 </script>
 
-{#if inline_text?.length > 0 && formUniq === uniq}
+{#if inline_text?.length > 0 && formUniq === String(uniq)}
  <div class="error {className}">
   {#if s_name}
    <span>{name}: </span>

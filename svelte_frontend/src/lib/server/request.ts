@@ -22,6 +22,7 @@ export const get_opts = (optsOrAction: Partial<FetchOptions> | string): FetchOpt
 export const assign_cookies = (event: { cookies: Cookies } | RequestEvent, response?: Response) => {
   if (!response) return;
   const cookiesHeader = response.headers.get('set-cookie');
+  console.log(cookiesHeader)
   if (!cookiesHeader) return;
   for (const str of splitCookiesString(cookiesHeader)) {
     const {name, value, ...options} = parseString(str);

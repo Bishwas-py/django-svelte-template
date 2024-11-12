@@ -31,7 +31,9 @@ from config.env import (
    SECRET_KEY,
    # SECURITY WARNING: define the correct hosts in production!
    ALLOWED_HOSTS,
-   CSRF_TRUSTED_ORIGINS
+   CSRF_TRUSTED_ORIGINS,
+   # Loggers
+   LOGGING
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

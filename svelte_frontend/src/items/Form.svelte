@@ -55,7 +55,7 @@
   }
 
   const uniq = Math.random();
-  setContext('uniq', Math.random());
+  setContext('uniq', uniq);
 </script>
 
 <form

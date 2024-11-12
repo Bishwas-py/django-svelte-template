@@ -1,8 +1,8 @@
-import json
-
 from django.http import HttpResponse
 from django.urls import resolve, reverse, NoReverseMatch, path
 from django.views.decorators.csrf import csrf_exempt
+
+from utils.c_logging import logger
 
 
 def prevent_trigger(view_func):
@@ -19,7 +19,9 @@ def prevent_trigger(view_func):
 def proxy(request):
    url_name = request.GET.get('url_name')
    try:
-      view_func = resolve(reverse(url_name)).func
+      url = reverse(url_name)
+      logger.info(f"[PROXY:{request.method}] {url}")
+      view_func = resolve(url).func
    except NoReverseMatch:
       return HttpResponse(f"URL name '{url_name}' does not exist.", status=404)
    if getattr(view_func, 'remove_trigger__', False):
