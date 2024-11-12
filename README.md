@@ -27,7 +27,7 @@ python manage.py migrate; python manage.py runserver;
 > - [db.py.sample](django_backend%2Fconfig%2Fdb.py.sample), rename/move it to `db.py`
 > - [env.py.sample](django_backend%2Fconfig%2Fenv.py.sample), rename/move it to `env.py`
 > - [mail.py.sample](django_backend%2Fconfig%2Fmail.py.sample), rename/move it to `mail.py`
-> 
+>
 > Edit the files accordingly.
 
 If you django server is running, goto `http://localhost:8000/` for swagger documentation.
@@ -68,7 +68,7 @@ So, let's start with:
 We have used powerful tools from both worlds to make this happen, you can see that here:
 
 - For backend: Django, Djapy, Pydantic, [DjangoKit (PyPi)](https://pypi.org/project/django-kit-fos/)
-- For frontend: Svelte 5, Tailwind CSS, [DjangoKit (NPM)](https://www.npmjs.com/package/@friendofsvelte/django-kit)
+- For frontend: Svelte 5, Tailwind CSS
 
 ### For backend  <img src="https://skillicons.dev/icons?i=django" width="12">
 
@@ -83,8 +83,8 @@ it serves as a proxy for SvelteKit requests to Django.
 
 ### For Frontend  <img src="https://skillicons.dev/icons?i=svelte" width="12">
 
-No doubts, Svelte is awesome, and I do feel Svelte 5 is awesome too. And `DjangoKit (NPM)` is a really
-powerful tool, provides quick and easy ways to integrate django's djapy with sveltekit
+No doubts, Svelte is awesome, and I do feel Svelte 5 is awesome too. The frontend has a really
+powerful tools/helpers, providing quick and easy ways to integrate django's with SvelteKit
 frontend, has toast (svelte runes based) and flash messages (cookie based).
 
 And tailwind css obviously, it could be a semi-sin to hate this thing, but yes, if you wanna remove
@@ -96,8 +96,8 @@ To simplify things, I will start from Svelte part of this template.
 
 ### SvelteKit - frontend using Svelte 5
 
-Our frontend is using a lot of magic from the django-kit (npm) library, and
-we might feel it's just pure magic going on here, but that's totally not magic.
+Our frontend is tightly typed with typescript , and we might feel it's
+just pure structural magic going on here, but that's totally not magic.
 
 Making things, even simple, we should start from the
 very [+layout.svelte](svelte_frontend%2Fsrc%2Froutes%2F%2Blayout.svelte) file.
@@ -109,9 +109,8 @@ In `src/+layout.svelte`, you can see:
 ```svelte
 <script>
     import "../app.css"; // for styling, optional: $items and pages are styled using tailwind css
-    import "iconify-icon"; // for icons, optional: $items/Flash.svelte uses this
 
-    import PutFlash from "@friendofsvelte/django-kit/components/PutFlash.svelte";
+    import PutFlash from "$items/PutFlash.svelte";
     import Flash from "$items/Flash.svelte";
 
     let {children} = $props();
@@ -123,8 +122,7 @@ In `src/+layout.svelte`, you can see:
 {@render children()}
 ```
 
-`PutFlash` is a components via `@friendofsvelte/django-kit`, which bind server sent flash
-messages to `notifier.toasts` (which you will learn shortly).
+`PutFlash` binds server sent flash messages to `notifier.toasts` (which you will learn shortly).
 
 `<PutFlash/>` binds every error sent in the following way:
 
@@ -142,16 +140,14 @@ messages to `notifier.toasts` (which you will learn shortly).
 
 `message` and `message_type` are required, else are optional.
 
-`Flash` is a custom written component, within `src/items/` directory, (alias for `$items`).
-
-`@friendofsvelte/django-kit` also provides a `DefaultFlash` component inside, `components/DefaultFlash.svelte`.
+`Flash` & `PutFlash` is a custom written component, within `src/items/` directory, (alias for `$items`).
 
 #### Notifier
 
 You might want to add a toast notification from the frontend, you can use `notifier` store.
 
 ```ts
-import {add_toast, dismiss_toast_after} from "@friendofsvelte/django-kit/notifier";
+import {add_toast, dismiss_toast_after} from "$lib/stores/notifier.svelte";
 
 add_toast({message: 'Hello World', message_type: 'success',}) // this will add a toast, but won't auto dismiss
 dismiss_toast_after(add_toast({message: 'Hello World', message_type: 'success',})) // this will dismiss the toast
@@ -177,10 +173,10 @@ Now, let's have a simple look at `src/+layout.server.ts`,
 import type {LayoutServerLoad} from "./$types";
 
 export const load: LayoutServerLoad = async (event) => {
-    return {
-        current_user: event.locals.current_user,
-        site_data: event.locals.site_data
-    };
+  return {
+    current_user: event.locals.current_user,
+    site_data: event.locals.site_data
+  };
 };
 ```
 
@@ -208,8 +204,11 @@ https://github.com/Bishwas-py/django-svelte-template/assets/42182303/2910fa0c-a8
 </script>
 
 <input type="text" name="username"/>
-<Error for="username"/>
+<Error for="username" {uniq}/>
 ```
+
+> {uniq} is a unique key, provided by the parent `Form` component, it's used to show the error for the
+> specific field.
 
 This will show the error for the `username` field, if any.
 
@@ -231,60 +230,55 @@ For that you have to index the form action
 in [src/routes/+page.server.ts](svelte_frontend%2Fsrc%2Froutes%2F%2Bpage.server.ts),
 
 ```ts
-import {via_route, via_route_name} from "@friendofsvelte/django-kit/server/actions";
+import {repl} from "$lib/server/repl";
 
-export const actions = via_route_name('create_todo');
+export const actions = repl('create_todo');
 ```
 
-`via_route_name` is a powerful and dynamic function, you can pass multiple route names and their
+`repl` is a powerful and dynamic function, you can pass multiple route names and their
 required methods, and it will handle the form submission for you.
 
 It's not just limited to form actions, you can use it for any action, like `GET`, `POST`, `PUT`, `DELETE`.
 
 ```ts
-export const actions = via_route_name([
-    {name: 'create_todo', method: 'POST'},
-    {name: 'delete_todo', method: 'DELETE'},
+export const actions = repl([
+  {name: 'create_todo', method: 'POST'},
+  {name: 'delete_todo', method: 'DELETE'},
 ]);
 ```
 
-> **Note**: for `via_route_name` to work you have to install `djagno-kit-fos` in your Django project, and set it up.
-> ```python
-> from django_kit_fos import trigger_pattern
-> urlpatterns = [..., *trigger_pattern]
-> ```
+###### Call actions
 
-OR,
-
-```ts
-export const actions = via_route(['update',], {prefix: 'todos'})
+```svelte
+  <Form
+    action="?/call&s=/todos/update/{todo.id}/&m=post"
+    ...
+  >
 ```
 
-OR, mixed
+Here, `?/call` is a special action, which is used to call a specific endpoint, mainly, when you want to
+pass parameters in the url.
 
-```ts
-export const actions = {
-    ...via_route_name([{name: 'create_todo', method: 'POST'}, {name: 'delete_todo', method: 'DELETE'},]),
-    ...via_route(['update',], {prefix: 'todos'})
-}
-```
+`&s` is the url, `&m` is the method.
 
 #### Rendering data
 
 In [src/routes/+page.server.ts](svelte_frontend%2Fsrc%2Froutes%2F%2Bpage.server.ts), you can see:
 
 ```ts
+import flashRedirect from "$lib/server/flash";
+
 export const load: PageServerLoad = async (event) => {
-    if (!event.locals.current_user) {
-        flash_redirect(event.cookies, {
-            alias: 'error',
-            message: 'You need to be logged in to access the dashboard.',
-            message_type: 'error'
-        }, 302, '/login')
-    }
-    return {
-        todos: await get_todos(event)
-    }
+  if (!event.locals.current_user) {
+    flashRedirect(event.cookies, {
+      alias: 'error',
+      message: 'You need to be logged in to access the dashboard.',
+      message_type: 'error'
+    }, 302, '/login')
+  }
+  return {
+    todos: await get_todos(event)
+  }
 }
 ```
 
@@ -293,10 +287,10 @@ uses [get_paginator](svelte_frontend%2Fsrc%2Flib%2Fserver%2Findex.ts) to get the
 
 If user is not logged in, it will redirect the user to the login page with an error message.
 
-> **Note**: You can use `flash_redirect` to redirect with a flash message, it's a helper function.
+> **Note**: You can use `flashRedirect` to redirect with a flash message, it's a helper function.
 > Or you can use `redirect` to redirect without a flash message.
-> Or you can use `put_flash` to put a flash message without redirecting,
-> `import {put_flash} from '@friendofsvelte/django-kit'`;
+> Or you can use `putFlash` to put a flash message without redirecting,
+> `import {putFlash} from '$lib/server/flash';`;
 
 #### Hooks: Authentication and Site data
 
@@ -306,23 +300,21 @@ For each first visit in a page, it triggers `handleAuth` which assigns `event.lo
 `handleAuth` uses the `get_init_data` function is used to get data.
 `handleAuth` later saves the cookies sent by the server, and assigns the data (site and user) to the event.
 
-To make fetching data to backend easier, we are using `django_fetch_handle`:
+To make fetching data to backend easier, we are defining `handleFetch` inside `src/hooks.server.ts`,:
 
 ```ts
-import {django_fetch_handle} from "@friendofsvelte/django-kit/server/handle";
-
-export const handleFetch = django_fetch_handle;
+export const handleFetch = ...;
 ```
 
 It allows you to request to backend endpoints by using `$api/` alias:
 
 ```ts
 event.fetch(`$api/path/to/endpoint`, {
-    method: 'POST',
-    body: JSON.stringify({data: 'data'}),
-    headers: {
-        'Content-Type': 'application/json'
-    }
+  method: 'POST',
+  body: JSON.stringify({data: 'data'}),
+  headers: {
+    'Content-Type': 'application/json'
+  }
 })
 ```
 
@@ -362,3 +354,5 @@ initial data. The [views.py](django_backend%2Fhome%2Fviews.py) here only has
 one view function `get_init_data`, which is actually a multipurpose view function.
 
 It assigns the current user and site data to the request, and also assign csrf token to the request.
+
+https://youtu.be/d3cCsptNcgg
