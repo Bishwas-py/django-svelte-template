@@ -25,7 +25,11 @@
     }
 
     .inp-wrap input, .input {
-        @apply px-2 py-0.5 block w-full bg-transparent outline-0;
+        @apply px-2 py-0.5 block w-full bg-transparent outline-0
+        [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgb(255,255,255,0)]
+        [&:-webkit-autofill]:duration-[5000s]
+        dark:[&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgb(23,23,23,0.8)]
+        dark:[&:-webkit-autofill]:text-neutral-300;
     }
 
     .p-but {
