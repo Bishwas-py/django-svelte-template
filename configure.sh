@@ -54,7 +54,8 @@ ALLOWED_HOSTS = []
 STRIPE_SECRET_KEY = 'sk_test_*'
 STRIPE_WEBHOOK_SECRET_KEY = 'whsec*'
 SECRET_KEY = 'django-insecure-pt50ualer8otrcli1@#@nsfqe*$f4mbtp+rug@rkyr^bia$fz!'
-LOGGING = {}"
+LOGGING = {}
+SITE_ID = 1"
 
 # mail.py
 create_config "$CONFIG_DIR/mail.py" "EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

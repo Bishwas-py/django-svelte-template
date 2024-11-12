@@ -33,7 +33,9 @@ from config.env import (
    ALLOWED_HOSTS,
    CSRF_TRUSTED_ORIGINS,
    # Loggers
-   LOGGING
+   LOGGING,
+   # Site info
+   SITE_ID
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

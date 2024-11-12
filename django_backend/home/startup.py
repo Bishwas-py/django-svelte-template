@@ -101,14 +101,8 @@ def site_data_db_startup() -> None:
    """
    try:
       defaults = SiteDefaults()
-
-      # Get or create site
       site = get_or_create_site(defaults)
-
-      # Create or update site data
       site_data = create_or_update_site_data(site, defaults)
-
-      # Log the configuration
       log_site_data(site_data)
 
    except Exception as e:
