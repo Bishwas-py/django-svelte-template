@@ -1,6 +1,5 @@
 from django.http import HttpResponse
 from django.urls import resolve, reverse, NoReverseMatch, path
-from django.views.decorators.csrf import csrf_exempt
 
 from utils.c_logging import logger
 
@@ -15,7 +14,6 @@ def prevent_trigger(view_func):
    return view_func
 
 
-@csrf_exempt
 def proxy(request):
    url_name = request.GET.get('url_name')
    try:

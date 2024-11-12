@@ -2,7 +2,7 @@
   export interface ErrorProps {
     name: string,
     index?: number,
-    s_name?: boolean,
+    s_name?: boolean, // show name in error message
     className?: string,
     has_err?: boolean,
     uniq: number
