@@ -1,77 +1,25 @@
+<script lang="ts" module>
+  import type {Todo} from "$lib/interfaces/todos";
+
+  export interface TodoItemProps {
+    todo: Todo;
+
+  }
+</script>
+
 <script lang="ts">
   import {dayjs_} from "$lib";
   import Form from "$items/Form.svelte";
-  import type {Todo} from "$lib/interfaces/todos";
   import ViewDate from "$items/ViewDate.svelte";
-  import {tv, type VariantProps} from "tailwind-variants";
   import BiCircleFill from "$icons/BiCircleFill.svelte";
   import Input from "$items/Input.svelte";
+  import {todoStatus, actionButton, modal} from '$lib/helpers/variants/todo-variants';
+  import type {FormActionResult} from "$lib/interfaces";
 
-  // Props destructuring with type safety
-  interface Props {
-    todo: Todo;
-  }
+  let {todo}: TodoItemProps = $props();
 
-  let {todo} = $props<Props>();
-
-  // State management
   let is_edit_popup_enabled = $state(false);
 
-  // Tailwind Variants Definitions
-  const todoCard = tv({
-    base: "flex flex-row items-center gap-3 shadow rounded p-3 w-full h-full",
-    variants: {
-      theme: {
-        light: "bg-white",
-        dark: "bg-neutral-950/50"
-      }
-    },
-    defaultVariants: {
-      theme: "light"
-    }
-  });
-
-  const todoStatus = tv({
-    base: "text-xs border-l-4 pl-2",
-    variants: {
-      status: {
-        success: "text-green-500 border-green-500",
-        error: "text-red-500 border-red-500",
-        warning: "text-blue-500 border-blue-500",
-        neutral: "text-gray-500 border-gray-500"
-      }
-    },
-    defaultVariants: {
-      status: "neutral"
-    }
-  });
-
-  const actionButton = tv({
-    base: "text-xs",
-    variants: {
-      intent: {
-        primary: "text-blue-500",
-        danger: "text-red-500"
-      },
-      padding: {
-        left: "pl-2",
-        none: ""
-      }
-    },
-    defaultVariants: {
-      padding: "none"
-    }
-  });
-
-  const modal = tv({
-    base: "fixed inset-0 bg-black/50 flex justify-center items-center backdrop-blur",
-    slots: {
-      container: "flex flex-col gap-2 bg-white dark:bg-neutral-950 shadow rounded p-3 w-full max-w-xl outline outline-4 outline-sky-500/40",
-      input: "inp-wrap"
-    }
-  });
-
-  // Constants for status messages
   const STATUS = {
     AHEAD: {
       text: "Exceptional! You completed the task ahead of the deadline.",
@@ -95,10 +43,9 @@
     }
   };
 
-  // Memoized current time
+  // Computed values
   const now = $derived(() => dayjs_());
 
-  // Optimized status calculation with early returns and memoization
   let todo_status = $derived.by(() => {
     const {completed_at, will_complete_at} = todo;
 
@@ -120,26 +67,31 @@
     return STATUS.LATE;
   });
 
-  // Event handlers
-  const closePopup = () => is_edit_popup_enabled = false;
-  const openPopup = () => is_edit_popup_enabled = true;
-
-  function on_keydown(event: KeyboardEvent) {
-    if (event.key === "Escape") closePopup();
-  }
-
-  // Memoized date formatting
   const created_at_formatted = $derived({
     relative: dayjs_(todo.created_at).fromNow(),
     full: dayjs_(todo.created_at).format('YYYY, MMMM D, dddd, HH:mm:ss')
   });
 
-  const {container: modalContainer, input: modalInput} = modal();
+  const closePopup = () => is_edit_popup_enabled = false;
+  const openPopup = () => is_edit_popup_enabled = true;
+
+  function onkeydown(event: KeyboardEvent) {
+    if (event.key === "Escape") closePopup();
+  }
+
+  function handleModalAfter(res: FormActionResult<{}>) {
+    if (res.type === "success") {
+      closePopup();
+    }
+  }
+
+  const {container: modalContainer, input: modalInput, base: modalBase} = modal();
 </script>
 
-<svelte:window on:keydown={on_keydown}/>
+<svelte:window {onkeydown}/>
 
-<Form class={todoCard({ theme: "dark", class: "dark" })}>
+<Form class="flex flex-row items-center gap-3 shadow rounded
+p-3 w-full h-full bg-white dark:bg-neutral-950/50">
  <BiCircleFill class="text-blue-500 w-4" display/>
  <input type="hidden" name="todo_id" value={todo.id}/>
 
@@ -157,9 +109,17 @@
    <div class="flex flex-col justify-between">
     <div class="flex flex-wrap flex-row justify-between gap-1 sm:gap-2">
      {#if todo.completed_at}
-      <ViewDate date_at={todo.completed_at} text="(completed)" class="text-green-500 text-xs"/>
+      <ViewDate
+        date_at={todo.completed_at}
+        text="(completed)"
+        class="text-green-500 text-xs"
+      />
      {/if}
-     <ViewDate date_at={todo.will_complete_at} text="(will complete)" class="text-purple-500 text-xs"/>
+     <ViewDate
+       date_at={todo.will_complete_at}
+       text="(will complete)"
+       class="text-purple-500 text-xs"
+     />
     </div>
 
     <blockquote class={todoStatus({ status: todo_status.variant })}>
@@ -188,14 +148,14 @@
 </Form>
 
 {#if is_edit_popup_enabled}
- <div class={modal()}>
+ <div class="{modalBase()}">
   <Form
     action="?/call&s=/todos/update/{todo.id}/&m=post"
     method="post"
     class={modalContainer()}
+    after={handleModalAfter}
   >
    <h3 class="text-lg font-bold">Edit todo: {todo.title}</h3>
-
 
    <Input name="title" text="Title" bind:value={todo.title}/>
 
@@ -220,7 +180,13 @@
    </div>
 
    <button type="submit" class={actionButton({ intent: "primary" })}>save</button>
-   <button type="button" class={actionButton({ intent: "danger" })} onclick={closePopup}>cancel</button>
+   <button
+     type="button"
+     class={actionButton({ intent: "danger" })}
+     onclick={closePopup}
+   >
+    cancel
+   </button>
   </Form>
  </div>
 {/if}

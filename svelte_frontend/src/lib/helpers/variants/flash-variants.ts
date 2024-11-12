@@ -1,4 +1,3 @@
-// flash-variants.ts
 import {tv} from 'tailwind-variants';
 
 export const flashVariants = tv({

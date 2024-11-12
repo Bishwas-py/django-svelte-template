@@ -68,7 +68,6 @@
   // eslint-disable-next-line no-undef
   let err_timeout: NodeJS.Timeout;
   $effect(() => {
-    console.log(formUniq, uniq)
     const _has_err = inline_text.length > 0 && formUniq === String(uniq);
     untrack(() => {
       clearTimeout(err_timeout);
