@@ -25,7 +25,7 @@
   </form>
  </div>
 
- <Form action="?/call&s=/todos/create/&m=post" method="post"
+ <Form action="?/create_todo" method="post"
        class="flex flex-col items-center justify-center rounded-lg w-full max-w-3xl gap-3">
   {#snippet children(uniq)}
    <h2 class="text-2xl font-bold">

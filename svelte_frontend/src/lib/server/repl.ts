@@ -1,6 +1,6 @@
 import {type Actions, fail, redirect, type RequestEvent, type ActionFailure} from '@sveltejs/kit';
 import {assign_cookies, get_headers} from '$lib/server/request';
-import {putFlash} from '$lib/server/flash.js';
+import {putFlash} from '$lib/server/flash';
 import {SERVER_ERROR_500} from '$lib/defaults/status';
 import {SERVER_ERROR_MSG} from '$lib/defaults/messages';
 import {ReMod} from "$lib/interfaces/repl-modes";
