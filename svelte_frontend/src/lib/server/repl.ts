@@ -63,6 +63,8 @@ async function handleRequest(
     allowCookies,
     addHeaders
   }: RequestOptions): ActionReturn {
+  const uniq = formData.get('uniq');
+  formData.delete('uniq');
   const finalUrl = (method === 'GET' || method === 'DELETE')
     ? `${url}&${formDataToString(formData)}`
     : url;
@@ -88,8 +90,8 @@ async function handleRequest(
     triggerFlashMessage(event, data);
 
     return response.ok
-      ? {success: true, data}
-      : fail(response.status, data);
+      ? data
+      : fail(response.status, {...data, uniq});
   } catch (e) {
     if (e instanceof Response) {
       throw e; // Rethrow redirect responses

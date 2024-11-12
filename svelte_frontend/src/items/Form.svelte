@@ -25,6 +25,7 @@
 
 <script lang="ts">
   import {enhance} from '$app/forms';
+  import {setContext} from 'svelte';
 
   let {
     action = '',
@@ -36,7 +37,7 @@
     after,
     reset = true,
     enctype,
-    action_function = actionFunction
+    action_function = actionFunction,
   }: FormProps = $props();
 
 
@@ -52,6 +53,9 @@
       });
     };
   }
+
+  const uniq = Math.random();
+  setContext('uniq', Math.random());
 </script>
 
 <form
@@ -62,4 +66,5 @@
   class:loading
   {enctype}>
  {@render children()}
+ <input type="hidden" name="uniq" value="{uniq}"/>
 </form>

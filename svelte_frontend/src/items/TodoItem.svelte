@@ -5,7 +5,7 @@
   import ViewDate from "$items/ViewDate.svelte";
   import {tv, type VariantProps} from "tailwind-variants";
   import BiCircleFill from "$icons/BiCircleFill.svelte";
-  import Record from "$items/Record.svelte";
+  import Input from "$items/Input.svelte";
 
   // Props destructuring with type safety
   interface Props {
@@ -196,16 +196,8 @@
   >
    <h3 class="text-lg font-bold">Edit todo: {todo.title}</h3>
 
-   <div class={modalInput()}>
-    <label for="title">Title</label>
-    <input
-      id="title"
-      type="text"
-      name="title"
-      placeholder="What needs to be done?"
-      bind:value={todo.title}
-    />
-   </div>
+
+   <Input name="title" text="Title" bind:value={todo.title}/>
 
    <div class={modalInput()}>
     <label for="completed_at">Completed at:</label>

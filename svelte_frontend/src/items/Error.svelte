@@ -4,7 +4,8 @@
     index?: number,
     s_name?: boolean,
     className?: string,
-    has_err?: boolean
+    has_err?: boolean,
+    uniq: number
   }
 
   export type ValidationError = {
@@ -24,7 +25,8 @@
     index,
     has_err = $bindable(),
     s_name = false,
-    className = ''
+    className = '',
+    uniq
   }: ErrorProps = $props();
 
 
@@ -46,6 +48,7 @@
   }
 
   const detail_err = $derived($page.form?.error);
+  const formUniq = $derived($page.form?.uniq);
   const inline_err = $derived($page.form?.inline);
 
   function get_inline_error() {
@@ -65,7 +68,8 @@
   // eslint-disable-next-line no-undef
   let err_timeout: NodeJS.Timeout;
   $effect(() => {
-    const _has_err = inline_text.length > 0;
+    console.log(formUniq, uniq)
+    const _has_err = inline_text.length > 0 && formUniq === uniq;
     untrack(() => {
       clearTimeout(err_timeout);
       has_err = _has_err;
@@ -76,7 +80,7 @@
   });
 </script>
 
-{#if inline_text?.length > 0}
+{#if inline_text?.length > 0 && formUniq === uniq}
  <div class="error {className}">
   {#if s_name}
    <span>{name}: </span>
