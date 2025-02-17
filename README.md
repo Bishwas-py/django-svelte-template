@@ -347,6 +347,11 @@ The `authentication` app is responsible for handling the authentication, and it 
 It has four major views files, each fulfilling a specific task, related to their name.
 You can check [urls.py](django_backend%2Fauthentication%2Furls.py) for more info.
 
+
+### Something more
+
+We are currently working on a svelte specific platform that distributes SaaS templates, organization dashboard, kanban UIs, and more on [growthsaas.dev](https://growthsaas.dev/). The platform is still beta, and we only have the premium version of django-svelte-template.
+
 #### Home
 
 The another app you will see is `home`, it's a simple app, which is responsible for rendering the
