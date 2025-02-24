@@ -1,3 +1,5 @@
+> We are currently working on a svelte specific platform that distributes SaaS templates, organization dashboard, kanban UIs, and more on [growthsaas.dev](https://growthsaas.dev/). The platform is still beta, and we only have the premium version of django-svelte-template.
+
 # Django Svelte Template
 
 Well, the desperate urge of creating awesome webapps using Django had forced you to
@@ -347,10 +349,6 @@ The `authentication` app is responsible for handling the authentication, and it 
 It has four major views files, each fulfilling a specific task, related to their name.
 You can check [urls.py](django_backend%2Fauthentication%2Furls.py) for more info.
 
-
-### Something more
-
-We are currently working on a svelte specific platform that distributes SaaS templates, organization dashboard, kanban UIs, and more on [growthsaas.dev](https://growthsaas.dev/). The platform is still beta, and we only have the premium version of django-svelte-template.
 
 #### Home
 
