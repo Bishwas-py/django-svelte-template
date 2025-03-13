@@ -3,7 +3,7 @@ venv/
 __pycache__/
 media/
 db.sqlite3
-config/*.py
+config/*
 !config/*.sample
 virtualenv/
 static/
