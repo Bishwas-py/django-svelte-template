@@ -1,0 +1,98 @@
+# Pre-commit configuration with auto-fixing formatters and linting checks
+repos:
+# Basic file cleanups (will auto-fix)
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: check-yaml
+    - id: check-added-large-files
+
+# Python formatters (will auto-fix)
+- repo: https://github.com/psf/black
+  rev: 23.12.1
+  hooks:
+    - id: black
+      files: ^django_backend/
+
+- repo: https://github.com/pycqa/isort
+  rev: 5.13.2
+  hooks:
+    - id: isort
+      files: ^django_backend/
+      args: ['--profile=black']
+
+# Frontend formatters (will auto-fix)
+- repo: local
+  hooks:
+    - id: prettier
+      name: prettier
+      entry: bash -c 'cd svelte_frontend && npm run format'
+      language: system
+      files: ^svelte_frontend/.*\.(js|ts|svelte|json|css|scss|md)$
+      pass_filenames: false
+
+# Python linting (will block commit on error)
+- repo: https://github.com/PyCQA/flake8
+  rev: 7.1.2
+  hooks:
+    - id: flake8
+      files: ^django_backend/
+      types: [python]
+      additional_dependencies: [flake8-bugbear]
+
+# Frontend checks (will block commit on error)
+- repo: local
+  hooks:
+    - id: svelte-check
+      name: svelte-check
+      entry: bash -c 'cd svelte_frontend && npm run check'
+      language: system
+      files: ^svelte_frontend/.*\.(js|ts|svelte)$
+      pass_filenames: false
+
+    - id: svelte-lint
+      name: svelte-lint
+      entry: bash -c 'cd svelte_frontend && npm run lint'
+      language: system
+      files: ^svelte_frontend/.*\.(js|ts|svelte)$
+      pass_filenames: false
+
+# Commit message formatting
+- repo: https://github.com/commitizen-tools/commitizen
+  rev: v1.17.0
+  hooks:
+    - id: commitizen
+      stages: [commit-msg]
+
+# SvelteKit frontend checks (these will block commits if they fail)
+- repo: local
+  hooks:
+    - id: svelte-check
+      name: svelte-check
+      entry: bash -c 'cd svelte_frontend && npm run check'
+      language: system
+      files: ^svelte_frontend/.*\.(js|ts|svelte)$
+      pass_filenames: false
+      stages: [pre-commit]
+
+    - id: svelte-lint
+      name: svelte-lint
+      entry: bash -c 'cd svelte_frontend && npm run lint'
+      language: system
+      files: ^svelte_frontend/.*\.(js|ts|svelte)$
+      stages: [pre-commit]
+
+# Basic file checks
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+    - id: trailing-whitespace
+      stages: [pre-commit]
+    - id: end-of-file-fixer
+      stages: [pre-commit]
+    - id: check-yaml
+      stages: [pre-commit]
+    - id: check-added-large-files
+      stages: [pre-commit]

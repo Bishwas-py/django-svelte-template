@@ -65,11 +65,11 @@ A powerful, modern web application template that combines Django's robust backen
 - **Django**: Production-ready web framework with powerful ORM and admin interface
 - **Djapy**: Django-Pydantic integration for robust API validation
 - **Pydantic**: Data validation using Python type annotations
-- **[DjangoKit](https://pypi.org/project/django-kit-fos/)**: Seamless SvelteKit-Django request handling
+- **Custom Request Handler**: Seamless SvelteKit-Django request handling via `callViaRouteName`
 
 ### Frontend Technologies
 - **SvelteKit**: Next-generation frontend framework with Svelte 5
-- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development, proudly Tailwind 4
 - **TypeScript**: Enhanced type safety and developer experience
 
 ### Key Features
@@ -123,17 +123,17 @@ Server-side flash messages are handled by the `PutFlash` and `Flash` components 
 Use the `notifier` store for client-side toast notifications:
 
 ```typescript
-import { add_toast, dismiss_toast_after } from "$lib/stores/notifier.svelte";
+import { addToast, dismissToastAfter } from "$lib/stores/notifier.svelte";
 
 // Persistent toast
-add_toast({
+addToast({
     message: 'Hello World',
     message_type: 'success'
 });
 
 // Auto-dismissing toast
-dismiss_toast_after(
-    add_toast({
+dismissToastAfter(
+    addToast({
         message: 'Hello World',
         message_type: 'success'
     })
@@ -143,13 +143,13 @@ dismiss_toast_after(
 Example component usage:
 ```svelte
 <script>
-    import { add_toast, dismiss_toast_after } from "@friendofsvelte/django-kit/notifier";
+    import { addToast, dismissToastAfter } from "$lib/stores/notifier.svelte";
 </script>
 
 <button 
     onclick={() => {
-        dismiss_toast_after(
-            add_toast({
+        dismissToastAfter(
+            addToast({
                 message: 'Hello World',
                 message_type: 'success'
             })
@@ -208,6 +208,8 @@ The `uniq` prop is provided by the parent `Form` component to associate errors w
 
 ### Form Actions and Data Handling
 
+This template includes a custom request handling system that seamlessly connects SvelteKit forms with Django URL patterns using Django's URL names.
+
 #### Basic Form Actions
 ```svelte
 <!-- src/routes/+page.svelte -->
@@ -216,17 +218,17 @@ The `uniq` prop is provided by the parent `Form` component to associate errors w
 </Form>
 ```
 
-Register form actions in `src/routes/+page.server.ts`:
+Register form actions in `src/routes/+page.server.ts` using our custom `callViaRouteName` function:
 ```typescript
-import { repl } from "$lib/server/repl";
+import { callViaRouteName } from "$lib/server/repl";
 
-// Single action
-export const actions = repl('create_todo');
+// Single action - matches Django URL name 'create_todo'
+export const actions = callViaRouteName('create_todo');
 
-// Multiple actions with methods
-export const actions = repl([
-    { name: 'create_todo', method: 'POST' },
-    { name: 'delete_todo', method: 'DELETE' }
+// Multiple actions with specific HTTP methods
+export const actions = callViaRouteName([
+    { name: 'create_todo', method: 'POST' },    // Matches Django URL name
+    { name: 'delete_todo', method: 'DELETE' }   // Matches Django URL name
 ]);
 ```
 
@@ -240,13 +242,14 @@ export const actions = repl([
 #### Server-Side Data and Redirects
 ```typescript
 // src/routes/+page.server.ts
-import flashRedirect from "$lib/server/flash";
+import { flashRedirect } from "$lib/server/flash";
 
 export const load: PageServerLoad = async (event) => {
     if (!event.locals.current_user) {
         flashRedirect(event.cookies, {
             message: 'Login required',
-            message_type: 'error'
+            message_type: 'error',
+            alias: 'auth_error'  // Alias is required for flash messages
         }, 302, '/login');
     }
     return { todos: await get_todos(event) };
@@ -306,13 +309,28 @@ After running `source bin/setup`, you'll have access to:
    - SvelteKit frontend: `http://localhost:5173`
    - Email server: `localhost:1725`
 
-2. **`format` Command**
+2. **Code Quality Tools**
    ```bash
-   format  # Runs pre-commit hooks
+   format  # Run all formatters and linters
    ```
-   - Formats code
-   - Runs linters
-   - Ensures code quality
+   
+   The template includes comprehensive code quality tools enforced via pre-commit hooks:
+
+   **Python (Django Backend)**
+   - Black code formatter
+   - isort import sorting (Black profile)
+   - Flake8 linting with bugbear plugin
+
+   **Frontend (SvelteKit)**
+   - Prettier formatting
+   - Svelte component checking
+   - ESLint with TypeScript
+
+   **General**
+   - YAML validation
+   - File formatting (trailing whitespace, EOF fixing)
+   - Large file checks
+   - Commitizen for consistent commit messages
 
 The development servers can be started from any project directory, and hot-reloading is enabled for both frontend and backend changes.
 
