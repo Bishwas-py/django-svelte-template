@@ -31,7 +31,7 @@ check_venv() {
             print_status INFO "Activating virtual environment..."
             source "${venv_dir}/bin/activate" || source "${venv_dir}/Scripts/activate"
         else
-            print_status ERROR "Virtual environment not found. Please run configure.sh first."
+            print_status ERROR "Virtual environment not found. Please run configure first."
             exit 1
         fi
     fi
@@ -52,7 +52,7 @@ check_services() {
     fi
 
     if [ ! -d "${FRONTEND_DIR}/node_modules" ]; then
-        print_status ERROR "Frontend dependencies not installed. Please run configure.sh first."
+        print_status ERROR "Frontend dependencies not installed. Please run configure first."
         exit 1
     fi
 }
