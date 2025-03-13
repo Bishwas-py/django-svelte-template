@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Set base directories
-ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null 2>&1 && pwd )"
+ROOT_DIR="$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
 BACKEND_DIR="${ROOT_DIR}/django_backend"
 CONFIG_DIR="${BACKEND_DIR}/config"
 FRONTEND_DIR="${ROOT_DIR}/svelte_frontend"
@@ -102,6 +102,7 @@ setup_precommit() {
 setup_frontend() {
     print_status INFO "Setting up frontend dependencies..."
     cd "$FRONTEND_DIR"
+    echo "$FRONTEND_DIR"
 
     if [ -f "package.json" ]; then
         print_status INFO "Installing frontend dependencies..."

@@ -1,11 +1,15 @@
 #!/bin/bash
 
 export PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
+
 run() {
     "$PROJECT_ROOT/bin/run" "$@"
 }
 format() {
     pre-commit run --all-files
+}
+configure() {
+    "$PROJECT_ROOT/bin/configure" "$@"
 }
 
 echo "🛠️  The following commands are now available:"
