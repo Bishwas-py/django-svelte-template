@@ -1,61 +1,62 @@
-import type {Handle, RequestEvent} from "@sveltejs/kit";
-import {sequence} from "@sveltejs/kit/hooks";
-import type {User} from "$lib/interfaces/auth";
-import type {SiteData} from "$lib/interfaces/site-data";
-import {assign_headers, get_headers, assign_cookies} from "$lib/server/request";
-import {SECRET_BASE_API} from "$env/static/private";
+import type { Handle } from '@sveltejs/kit';
+import { sequence } from '@sveltejs/kit/hooks';
 
-export const handleFetch = async ({request, fetch, event}) => {
-  const is_api_req = request.url.includes(`$api/`);
+import { env } from '$env/dynamic/private';
+import { getInitialData } from '$lib/server/initializer';
+import { DEFAULT_SITE_DATA } from '$lib/defaults/sitedata';
+import { generateCacheControl } from '$lib/server/cache';
 
-  if (is_api_req) {
-    const headers = get_headers(event, true);
-    assign_headers(request, headers);
+/*
+Simply elegant! No logging, and response is returned as it is. Priority#1st
+ */
+export const handleApi: Handle = async ({ event, resolve }) => {
+	if (event.url.pathname.startsWith('/api')) {
+		event.url.pathname = event.url.pathname.replace('/api', '');
+		const prepared_url = event.url.href.replace(event.url.origin, env.API_URL);
 
-    const req_url = `${SECRET_BASE_API}/${request.url.split('$api/')[1]}`;
+		const response = await event.fetch(prepared_url, {
+			headers: event.request.headers,
+			method: event.request.method,
+			signal: event.request.signal,
+			keepalive: event.request.keepalive,
+			body: ['GET', 'HEAD'].includes(event.request.method) ? undefined : await event.request.text()
+		});
 
-    const options = {
-      method: request.method,
-      headers: request.headers,
-      cache: request.cache,
-      credentials: request.credentials,
-      mode: request.mode,
-      referrer: request.referrer,
-      referrerPolicy: request.referrerPolicy,
-      integrity: request.integrity,
-      keepalive: request.keepalive,
-      signal: request.signal,
-      redirect: request.redirect
-    } as RequestInit;
+		const req_content_type = event.request.headers.get('content-type') || 'application/json';
+		const content_type = response.headers.get('content-type') || req_content_type;
+		const set_cookie = response.headers.get('set-cookie') || '';
 
-    if (request.method === 'POST' || request.method === 'PUT') {
-      options['body'] = await request.text();
-    }
-    return fetch(req_url, options);
-  }
-  return fetch(request);
+		const cache_control = generateCacheControl({
+			headers: response.headers,
+			method: event.request.method
+		});
+
+		return new Response(response.body, {
+			status: response.status,
+			statusText: response.statusText,
+			headers: {
+				'content-type': content_type,
+				'set-cookie': set_cookie,
+				'cache-control': cache_control
+			}
+		});
+	}
+	return resolve(event);
 };
 
-async function get_init_data(event: RequestEvent): Promise<[Response, {
-  current_user: User,
-  site_data: SiteData
-}]> {
-  const response = await event.fetch(`$api/home/init-data/`);
-  return [response, await response.json()];
-}
+export const handleInitialData: Handle = async ({ event, resolve }) => {
+	if (event.cookies.get('sessionid') || !event.cookies.get('csrftoken')) {
+		event.locals.init = await getInitialData(event);
+		console.log(JSON.stringify(event.locals.init, null, 2));
+		
+	} else {
+		event.locals.init = {
+			site_data: DEFAULT_SITE_DATA,
+			current_user: undefined
+			// subscriptions: undefined
+		};
+	}
+	return resolve(event);
+};
 
-const handleAuth = (async ({event, resolve}) => {
-  try {
-    const [response, init] = await get_init_data(event);
-    assign_cookies(event, response);
-    if (response.ok) {
-      event.locals.current_user = init.current_user;
-      event.locals.site_data = init.site_data;
-    }
-  } catch (e) {
-    console.error("Error fetching user: ", e);
-  }
-  return resolve(event);
-}) satisfies Handle;
-
-export const handle = sequence(handleAuth,);
+export const handle = sequence(handleApi, handleInitialData);

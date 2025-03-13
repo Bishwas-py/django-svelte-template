@@ -1,0 +1,34 @@
+<script lang="ts" module>
+	export interface FluentCompassNorthwest16FilledProps {
+		display?: boolean;
+		occupy?: boolean;
+		size?: number;
+		class?: string;
+	}
+</script>
+
+<script lang="ts">
+	const {
+		display = false,
+		occupy = true,
+		size = 0.7,
+		class: className = ''
+	}: FluentCompassNorthwest16FilledProps = $props();
+</script>
+
+{#if display}
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="{size}em"
+		height="{size}em"
+		viewBox="0 0 16 16"
+		class={className}
+	>
+		<path
+			fill="currentColor"
+			d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14m2.438-5.236a.5.5 0 0 1-.674.674l-1.922-1a3 3 0 0 1-1.279-1.281l-.989-1.909a.5.5 0 0 1 .674-.674l1.91.99a3 3 0 0 1 1.28 1.278z"
+		/>
+	</svg>
+{:else if occupy}
+	<div style="height: {size}em; width: {size}em;"></div>
+{/if}

@@ -1,3 +1,3 @@
-import {repl} from "$lib/server/repl";
+import { callViaRouteName } from '$lib/server/repl';
 
-export const actions = repl('login')
+export const actions = callViaRouteName('login');

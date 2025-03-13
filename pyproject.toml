@@ -1,0 +1,28 @@
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version = "0.0.1"
+version_scheme = "semver"
+update_changelog_on_bump = true
+
+[tool.commitizen.style]
+qmark = "fg:#ff9d00 bold"
+question = "bold"
+answer = "fg:#ff9d00 bold"
+pointer = "fg:#ff9d00 bold"
+highlighted = "fg:#ff9d00 bold"
+selected = "fg:#cc5454"
+separator = "fg:#cc5454"
+instruction = ""
+text = ""
+disabled = "fg:#858585 italic"
+
+[tool.black]
+line-length = 80
+target-version = ['py39']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 80

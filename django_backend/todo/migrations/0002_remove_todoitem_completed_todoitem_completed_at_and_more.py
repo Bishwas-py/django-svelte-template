@@ -4,23 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-   dependencies = [
-      ('todo', '0001_initial'),
-   ]
+    dependencies = [
+        ("todo", "0001_initial"),
+    ]
 
-   operations = [
-      migrations.RemoveField(
-         model_name='todoitem',
-         name='completed',
-      ),
-      migrations.AddField(
-         model_name='todoitem',
-         name='completed_at',
-         field=models.DateTimeField(blank=True, null=True),
-      ),
-      migrations.AddField(
-         model_name='todoitem',
-         name='will_complete_at',
-         field=models.DateTimeField(blank=True, null=True),
-      ),
-   ]
+    operations = [
+        migrations.RemoveField(
+            model_name="todoitem",
+            name="completed",
+        ),
+        migrations.AddField(
+            model_name="todoitem",
+            name="completed_at",
+            field=models.DateTimeField(blank=True, null=True),
+        ),
+        migrations.AddField(
+            model_name="todoitem",
+            name="will_complete_at",
+            field=models.DateTimeField(blank=True, null=True),
+        ),
+    ]

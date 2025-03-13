@@ -1,4 +1,4 @@
 export enum ReMod {
-  NAME = ".proxy",
-  URL_NAME = "url_name",
+	NAME = '.proxy',
+	URL_NAME = 'url_name'
 }

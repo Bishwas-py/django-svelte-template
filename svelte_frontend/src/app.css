@@ -1,48 +1,26 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@import '$fonts/styles/work-sans.css';
+
+@plugin 'tailwind-scrollbar';
+
+@theme {
+	--font-work-sans: work-sans, sans-serif;
+	--default-font-family: var(--font-work-sans);
+}
 
 @layer base {
-    body {
-        @apply antialiased text-neutral-900 font-work-sans
-        bg-orange-50 dark:bg-neutral-900 dark:text-neutral-300;
-    }
+	body {
+		@apply bg-white text-black antialiased dark:bg-black dark:text-white;
+	}
 }
 
 @layer components {
-    .inp-wrap {
-        @apply flex flex-col rounded-md border
-        border-neutral-300 shadow-sm focus-within:ring focus-within:ring-cyan-500 focus-within:border-indigo-500
-        dark:bg-neutral-900/80 dark:border-neutral-600 dark:text-neutral-300 duration-500;
-    }
+	.button-default {
+		@apply rounded-md bg-teal-600 px-3 py-2 text-white shadow-sm hover:bg-teal-700 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:outline-none dark:bg-teal-800;
+	}
 
-    .inp-wrap.has_err {
-        @apply border-red-500 dark:border-red-500 focus-within:ring-red-500 text-red-400;
-    }
-
-    .inp-wrap label, .label {
-        @apply px-2 py-0 font-medium;
-    }
-
-    .inp-wrap input, .input {
-        @apply px-2 py-0.5 block w-full bg-transparent outline-0
-        [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgb(255,255,255,0)]
-        [&:-webkit-autofill]:duration-[5000s]
-        dark:[&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgb(23,23,23,0.8)]
-        dark:[&:-webkit-autofill]:text-neutral-300;
-    }
-
-    .p-but {
-        @apply px-3 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-800
-        rounded-md shadow-sm text-white focus:outline-none
-        focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
-    }
-
-    .goto-button {
-        @apply text-blue-600 dark:text-blue-300 hover:text-blue-500 dark:hover:text-blue-400;
-    }
-
-    .f-dotted {
-        @apply focus:outline-dotted rounded-xl outline-1 px-1;
-    }
+	.is-link {
+		@apply text-teal-600 hover:text-teal-500 dark:text-teal-300 dark:hover:text-teal-400;
+	}
 }

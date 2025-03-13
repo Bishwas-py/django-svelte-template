@@ -1,0 +1,34 @@
+<script lang="ts" module>
+	export interface FluentSettings16FilledProps {
+		display?: boolean;
+		occupy?: boolean;
+		size?: number;
+		class?: string;
+	}
+</script>
+
+<script lang="ts">
+	const {
+		display = false,
+		occupy = true,
+		size = 0.7,
+		class: className = ''
+	}: FluentSettings16FilledProps = $props();
+</script>
+
+{#if display}
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="{size}em"
+		height="{size}em"
+		viewBox="0 0 16 16"
+		class={className}
+	>
+		<path
+			fill="currentColor"
+			d="M2.267 6.153A6 6 0 0 1 3.53 3.98a.36.36 0 0 1 .382-.095l1.36.484a.71.71 0 0 0 .935-.538l.26-1.416a.35.35 0 0 1 .274-.282a6.1 6.1 0 0 1 2.52 0c.14.03.248.141.274.282l.26 1.416a.708.708 0 0 0 .935.538l1.36-.484a.36.36 0 0 1 .382.095a6 6 0 0 1 1.262 2.173a.35.35 0 0 1-.108.378l-1.102.931a.703.703 0 0 0 0 1.076l1.102.931c.11.093.152.242.108.378a6 6 0 0 1-1.262 2.173a.36.36 0 0 1-.382.095l-1.36-.484a.71.71 0 0 0-.935.538l-.26 1.416a.35.35 0 0 1-.275.282a6.1 6.1 0 0 1-2.519 0a.35.35 0 0 1-.275-.282l-.259-1.416a.708.708 0 0 0-.935-.538l-1.36.484a.36.36 0 0 1-.382-.095a6 6 0 0 1-1.262-2.173a.35.35 0 0 1 .108-.378l1.102-.931a.704.704 0 0 0 0-1.076l-1.102-.931a.35.35 0 0 1-.108-.378M6.25 8a1.75 1.75 0 1 0 3.5 0a1.75 1.75 0 0 0-3.5 0"
+		/>
+	</svg>
+{:else if occupy}
+	<div style="height: {size}em; width: {size}em;"></div>
+{/if}

@@ -1,0 +1,258 @@
+#!/bin/bash
+set -euo pipefail
+
+# Set base directories
+ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null 2>&1 && pwd )"
+BACKEND_DIR="${ROOT_DIR}/django_backend"
+CONFIG_DIR="${BACKEND_DIR}/config"
+FRONTEND_DIR="${ROOT_DIR}/svelte_frontend"
+
+# Print function with colors
+print_status() {
+    local level=$1
+    shift
+    local message=$@
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    case $level in
+        INFO) echo -e "\033[0;32m[$timestamp] [$level] $message\033[0m" ;;
+        WARN) echo -e "\033[0;33m[$timestamp] [$level] $message\033[0m" ;;
+        ERROR) echo -e "\033[0;31m[$timestamp] [$level] $message\033[0m" ;;
+        *) echo "[$timestamp] [$level] $message" ;;
+    esac
+}
+
+# Error handling
+set -e
+trap 'print_status ERROR "An error occurred on line $LINENO"' ERR
+
+# Check python and node versions
+check_dependencies() {
+    print_status INFO "Checking dependencies..."
+
+    if ! command -v python3 &> /dev/null; then
+        print_status ERROR "Python3 is not installed"
+        exit 1
+    fi
+
+    if ! command -v node &> /dev/null; then
+        print_status ERROR "Node.js is not installed"
+        exit 1
+    fi
+
+    if ! command -v pip &> /dev/null; then
+        print_status ERROR "pip is not installed"
+        exit 1
+    fi
+
+    python3 --version
+    node --version
+    pip --version
+}
+
+# Create config directories
+create_directories() {
+    print_status INFO "Creating config directories"
+    mkdir -p "$CONFIG_DIR"
+    mkdir -p "$FRONTEND_DIR"
+}
+
+# Function to create config files with backup functionality
+create_config() {
+    local file=$1
+    local content=$2
+    local filename=$(basename "$file")
+
+    if [ -f "$file" ]; then
+        print_status WARN "Found existing $filename"
+        read -p "Do you want to overwrite it? (y/N): " should_overwrite
+
+        if [[ ! $should_overwrite =~ ^[Yy]$ ]]; then
+            print_status INFO "Keeping existing $filename"
+            return
+        fi
+
+        # Create backup before overwriting
+        local backup_file="${file}.backup.$(date +%Y%m%d_%H%M%S)"
+        mv "$file" "$backup_file"
+        print_status INFO "Created backup: $backup_file"
+    fi
+
+    print_status INFO "Creating: $filename"
+    echo "$content" > "$file" && print_status INFO "Created: $filename"
+}
+
+# Setup pre-commit configuration
+setup_precommit() {
+    print_status INFO "Checking pre-commit installation..."
+
+    # Install pre-commit if not installed
+    if ! command -v pre-commit &> /dev/null; then
+        print_status INFO "Installing pre-commit..."
+        pip install pre-commit
+    else
+        print_status INFO "pre-commit is already installed"
+    fi
+
+    # Install pre-commit hooks regardless of config file status
+    print_status INFO "Installing pre-commit hooks..."
+    pre-commit install --hook-type pre-commit --hook-type commit-msg
+}
+
+# Setup frontend dependencies
+setup_frontend() {
+    print_status INFO "Setting up frontend dependencies..."
+    cd "$FRONTEND_DIR"
+
+    if [ -f "package.json" ]; then
+        print_status INFO "Installing frontend dependencies..."
+        # Check for existing node_modules
+        if [ -d "node_modules" ]; then
+            print_status WARN "Found existing node_modules"
+            read -p "Do you want to clean install? (y/N): " should_clean
+
+            if [[ $should_clean =~ ^[Yy]$ ]]; then
+                print_status INFO "Removing node_modules..."
+                rm -rf node_modules
+                npm install
+            else
+                print_status INFO "Updating existing dependencies..."
+                npm install
+            fi
+        else
+            npm install
+        fi
+    else
+        print_status ERROR "package.json not found in frontend directory"
+        exit 1
+    fi
+
+    if [ -d "node_modules/.bin" ]; then
+        print_status INFO "Setting permissions for node_modules/.bin..."
+        chmod +x node_modules/.bin/*
+    fi
+
+    cd "$ROOT_DIR"
+}
+
+# Setup backend dependencies
+setup_backend() {
+    print_status INFO "Setting up backend dependencies..."
+    cd "$CONFIG_DIR/.."
+
+    if [ -f "requirements.txt" ]; then
+        print_status INFO "Installing backend dependencies..."
+        pip install -r requirements.txt
+    else
+        print_status WARN "requirements.txt not found in backend directory"
+    fi
+
+    cd "$ROOT_DIR"
+}
+# Create virtual environment
+create_venv() {
+    print_status INFO "Checking Python virtual environment..."
+    local venv_dir="${BACKEND_DIR}/venv"
+
+    if [ -d "$venv_dir" ]; then
+        print_status WARN "Found existing virtual environment"
+        read -p "Do you want to recreate it? (y/N): " should_recreate
+
+        if [[ $should_recreate =~ ^[Yy]$ ]]; then
+            print_status INFO "Removing existing virtual environment..."
+            rm -rf "$venv_dir"
+            python3 -m venv "$venv_dir"
+            print_status INFO "Created new virtual environment"
+        else
+            print_status INFO "Using existing virtual environment"
+        fi
+    else
+        print_status INFO "Creating new virtual environment..."
+        python3 -m venv "$venv_dir"
+    fi
+
+    # Activate virtual environment
+    source "$venv_dir/bin/activate" || source "$venv_dir/Scripts/activate"
+    print_status INFO "Virtual environment activated"
+}
+
+# Main execution
+main() {
+    print_status INFO "Starting configuration setup..."
+
+    # Check dependencies
+    check_dependencies
+
+    # Create virtual environment
+    create_venv
+
+    # Create directories
+    create_directories
+
+    # Create config files
+    print_status INFO "Creating configuration files..."
+
+    # db.py
+    create_config "$CONFIG_DIR/db.py" "from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATABASES = {
+   'default': {
+      'ENGINE': 'django.db.backends.sqlite3',
+      'NAME': BASE_DIR / 'db.sqlite3',
+   }
+}"
+
+    # env.py
+    create_config "$CONFIG_DIR/env.py" "CSRF_TRUSTED_ORIGINS = [
+   'http://localhost:5173',
+]
+DEBUG = True
+PRODUCTION = False
+ALLOWED_HOSTS = []
+STRIPE_SECRET_KEY = 'sk_test_*'
+STRIPE_WEBHOOK_SECRET_KEY = 'whsec*'
+SECRET_KEY = 'django-insecure-pt50ualer8otrcli1@#@nsfqe*_f4mbtp+rug@rkyr^bia_fz!'
+LOGGING = {}
+SITE_ID = 1"
+
+    # mail.py
+    create_config "$CONFIG_DIR/mail.py" "EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = \"localhost\"
+EMAIL_PORT = \"1725\"
+EMAIL_HOST_USER = \"\"
+EMAIL_HOST_PASSWORD = \"\"
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = \"info@developsite.com\""
+
+    # frontend .env
+    create_config "$FRONTEND_DIR/.env" "API_URL=http://localhost:8000"
+
+    # Setup pre-commit
+    setup_precommit
+
+    # Setup dependencies
+    setup_frontend
+    setup_backend
+
+    # Setup run command
+    print_status INFO "Setting up run command..."
+    source "$ROOT_DIR/bin/setup.sh"
+
+    # Summary
+    print_status INFO "Configuration setup completed"
+    echo -e "\nCreated files:"
+    find "$CONFIG_DIR" "$FRONTEND_DIR/.env" -type f -exec ls -l {} \;
+
+    print_status INFO "Next steps:"
+    echo "1. Review the created configuration files"
+    echo "2. Update the environment variables in django_backend/config/env.py"
+    echo "3. Update the frontend .env file if needed"
+    echo "4. Start the development servers:"
+    echo "   - Backend: python manage.py runserver"
+    echo "   - Frontend: npm run dev"
+    echo "   - Or simply use: run"
+    echo "   - To format code: format"
+}
+
+# Run main function
+main

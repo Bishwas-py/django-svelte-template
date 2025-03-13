@@ -1,0 +1,161 @@
+#!/bin/bash
+set -euo pipefail
+
+# Set base directories (one level up from bin directory)
+ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." > /dev/null 2>&1 && pwd )"
+BACKEND_DIR="${ROOT_DIR}/django_backend"
+FRONTEND_DIR="${ROOT_DIR}/svelte_frontend"
+
+# Print function with colors
+print_status() {
+    local level=$1
+    shift
+    local message=$@
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    case $level in
+        INFO) echo -e "\033[0;32m[$timestamp] [$level] $message\033[0m" ;;
+        WARN) echo -e "\033[0;33m[$timestamp] [$level] $message\033[0m" ;;
+        ERROR) echo -e "\033[0;31m[$timestamp] [$level] $message\033[0m" ;;
+        *) echo "[$timestamp] [$level] $message" ;;
+    esac
+}
+
+# Error handling
+trap 'print_status ERROR "An error occurred on line $LINENO"' ERR
+
+# Function to check if virtual environment is activated
+check_venv() {
+    local venv_dir="${BACKEND_DIR}/venv"
+    if [ -z "${VIRTUAL_ENV:-}" ]; then
+        if [ -d "$venv_dir" ]; then
+            print_status INFO "Activating virtual environment..."
+            source "${venv_dir}/bin/activate" || source "${venv_dir}/Scripts/activate"
+        else
+            print_status ERROR "Virtual environment not found. Please run configure.sh first."
+            exit 1
+        fi
+    fi
+}
+
+# Function to check if all necessary services are installed
+check_services() {
+    print_status INFO "Checking services..."
+
+    if ! command -v python3 &> /dev/null; then
+        print_status ERROR "Python3 is not installed"
+        exit 1
+    fi
+
+    if ! command -v node &> /dev/null; then
+        print_status ERROR "Node.js is not installed"
+        exit 1
+    fi
+
+    if [ ! -d "${FRONTEND_DIR}/node_modules" ]; then
+        print_status ERROR "Frontend dependencies not installed. Please run configure.sh first."
+        exit 1
+    fi
+}
+
+# Function to check and install aiosmtpd if not installed
+check_aiosmtpd() {
+    if ! python3 -c "import aiosmtpd" &> /dev/null; then
+        print_status INFO "Installing aiosmtpd..."
+        pip install aiosmtpd
+    fi
+}
+
+# Function to run Django server
+run_django() {
+    print_status INFO "Starting Django server..."
+    cd "$BACKEND_DIR"
+
+    # Check for pending migrations
+    print_status INFO "Checking for pending migrations..."
+    # Store migrations check output and look for unapplied migrations (ones without [X])
+    migrations_output=$(python manage.py showmigrations)
+    unapplied_count=$(echo "$migrations_output" | grep -c "\[ \]" || true)  # Count entries with [ ] (not [X])
+
+    if [ "$unapplied_count" -gt 0 ]; then
+        print_status WARN "Found $unapplied_count pending migrations"
+        echo "$migrations_output"  # Show detailed migration status
+
+        read -p "Do you want to run migrations? (y/N): " should_migrate
+        if [[ $should_migrate =~ ^[Yy]$ ]]; then
+            print_status INFO "Running migrations..."
+            python manage.py migrate
+        fi
+    else
+        print_status INFO "All migrations are up to date"
+    fi
+
+    python manage.py runserver &
+    DJANGO_PID=$!
+    cd "$ROOT_DIR"
+}
+
+# Function to run Svelte dev server
+run_svelte() {
+    print_status INFO "Starting Svelte dev server..."
+    cd "$FRONTEND_DIR"
+    npm run dev &
+    SVELTE_PID=$!
+    cd "$ROOT_DIR"
+}
+
+# Function to run aiosmtpd server
+run_aiosmtpd() {
+    print_status INFO "Starting aiosmtpd server..."
+    aiosmtpd -n -l localhost:1725 --debug &
+    AIOSMTPD_PID=$!
+}
+
+# Function to handle script termination
+cleanup() {
+    print_status INFO "Shutting down servers..."
+    if [ -n "${DJANGO_PID:-}" ]; then
+        kill $DJANGO_PID 2>/dev/null || true
+    fi
+    if [ -n "${SVELTE_PID:-}" ]; then
+        kill $SVELTE_PID 2>/dev/null || true
+    fi
+    if [ -n "${AIOSMTPD_PID:-}" ]; then
+        kill $AIOSMTPD_PID 2>/dev/null || true
+    fi
+    print_status INFO "Servers stopped"
+    exit 0
+}
+
+# Main execution
+main() {
+    print_status INFO "Starting development servers..."
+
+    # Check services
+    check_services
+
+    # Check and activate virtual environment
+    check_venv
+
+    # Check and install aiosmtpd if not installed
+    check_aiosmtpd
+
+    # Set up cleanup on script termination
+    trap cleanup SIGINT SIGTERM
+
+    # Start servers
+    run_django
+    run_svelte
+    run_aiosmtpd
+
+    print_status INFO "All servers started!"
+    print_status INFO "Django server running at http://localhost:8000"
+    print_status INFO "Svelte dev server running at http://localhost:5173"
+    print_status INFO "aiosmtpd server running at localhost:1725"
+    print_status INFO "Press Ctrl+C to stop all servers"
+
+    # Wait for signal
+    wait
+}
+
+# Run main function
+main

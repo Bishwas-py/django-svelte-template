@@ -1,5 +1,3 @@
-> We are currently working on a svelte specific platform that distributes SaaS templates, organization dashboard, kanban UIs, and more on [growthsaas.dev](https://growthsaas.dev/). The platform is still beta, and we only have the premium version of django-svelte-template.
-
 # Django Svelte Template
 
 Well, the desperate urge of creating awesome webapps using Django had forced you to
@@ -8,7 +6,8 @@ search for a well-coupled Svelte template, and you're here.
 I can confidently confirm you that this template has almost everything
 you need to work with Django's awesome backend, and SvelteKit powerful frontend.
 
-> Note: This templated strictly supports Svelte 5.
+> Note: This templated strictly supports runes Svelte 5.
+> In beta, we are working on things!
 
 ## Getting started
 
@@ -124,7 +123,7 @@ In `src/+layout.svelte`, you can see:
 {@render children()}
 ```
 
-`PutFlash` binds server sent flash messages to `notifier.toasts` (which you will learn shortly).
+`PutFlash` binds server sent flash messages to `toasts` (which you will learn shortly).
 
 `<PutFlash/>` binds every error sent in the following way:
 
@@ -349,7 +348,6 @@ The `authentication` app is responsible for handling the authentication, and it 
 It has four major views files, each fulfilling a specific task, related to their name.
 You can check [urls.py](django_backend%2Fauthentication%2Furls.py) for more info.
 
-
 #### Home
 
 The another app you will see is `home`, it's a simple app, which is responsible for rendering the
@@ -359,3 +357,41 @@ one view function `get_init_data`, which is actually a multipurpose view functio
 It assigns the current user and site data to the request, and also assign csrf token to the request.
 
 https://youtu.be/d3cCsptNcgg
+
+## Development Setup
+
+### Using the `run` command
+
+This project uses `direnv` to provide the `run` command from anywhere in the project. To set it up:
+
+1. Install direnv if you haven't already:
+   ```bash
+   # On macOS with Homebrew
+   brew install direnv
+
+   # On Ubuntu/Debian
+   sudo apt-get install direnv
+   ```
+
+2. Add direnv hook to your shell:
+   ```bash
+   # Add to ~/.bashrc or ~/.zshrc
+   eval "$(direnv hook bash)"  # for bash
+   eval "$(direnv hook zsh)"   # for zsh
+   ```
+
+3. Allow the project's .envrc:
+   ```bash
+   cd /path/to/project
+   direnv allow
+   ```
+
+Now you can use the `run` command from anywhere in the project:
+```bash
+cd /path/to/project
+run  # Works from project root
+cd django_backend
+run  # Works from any subdirectory
+cd ../svelte_frontend
+run  # Still works!
+```
