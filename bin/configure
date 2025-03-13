@@ -237,7 +237,7 @@ DEFAULT_FROM_EMAIL = \"info@developsite.com\""
 
     # Setup run command
     print_status INFO "Setting up run command..."
-    source "$ROOT_DIR/bin/setup.sh"
+    source "$ROOT_DIR/bin/setup"
 
     # Summary
     print_status INFO "Configuration setup completed"
