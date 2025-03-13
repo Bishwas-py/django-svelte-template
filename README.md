@@ -6,7 +6,7 @@ A powerful, modern web application template that combines Django's robust backen
 [![Svelte](https://img.shields.io/badge/SvelteKit-FF3E00?style=flat&logo=svelte&logoColor=white)](https://kit.svelte.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-> **Note**: This template uses Svelte 5 with Runes (currently in beta)
+> **Note**: This template uses Svelte 5 with Runes [Strict]
 
 ## 🚀 Quick Start
 
