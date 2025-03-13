@@ -16,22 +16,22 @@ A powerful, modern web application template that combines Django's robust backen
    cd django-svelte-template
    ```
 
-2. **Run Initial Setup**
+2. **Initialize Development Environment**
    ```bash
-   # Run the configuration script
-   ./configure
-   
-   # Initialize development tools
+   # First, initialize development tools and commands
    source bin/setup
+
+   # Then, configure your development environment
+   configure
    ```
 
-   The setup process will:
-   - Check and install required dependencies
+   This two-step process will:
+   - Make development commands available (`source bin/setup`)
+   - Check and install required dependencies (`configure`)
    - Create a Python virtual environment
    - Set up configuration files (db.py, env.py, mail.py)
    - Install frontend dependencies
-   - Set up pre-commit hooks
-   - Make development commands available
+   - Set up pre-commit hooks for code quality
 
 3. **Start Development Servers**
    ```bash
@@ -53,13 +53,21 @@ A powerful, modern web application template that combines Django's robust backen
 ## 🛠️ Project Structure
 
 ### Development Tools
-- **`configure`**: Initial project setup script that:
+- **`bin/setup`**: Development environment initialization that:
+  - Makes development commands available in your shell
+  - Must be sourced first: `source bin/setup`
+  - Provides access to `configure`, `run`, and `format` commands
+
+- **`configure`**: Project configuration command that:
   - Sets up Python virtual environment
   - Installs project dependencies
   - Creates configuration files
   - Sets up pre-commit hooks
-- **`bin/setup`**: Development environment initialization
-- **`bin/run`**: Unified development server management
+  - Only available after running `source bin/setup`
+
+- **`run`**: Unified development server management
+  - Starts all development servers
+  - Available after running `source bin/setup`
 
 ### Backend Technologies
 - **Django**: Production-ready web framework with powerful ORM and admin interface
@@ -146,7 +154,7 @@ Example component usage:
     import { addToast, dismissToastAfter } from "$lib/stores/notifier.svelte";
 </script>
 
-<button 
+<button
     onclick={() => {
         dismissToastAfter(
             addToast({
@@ -297,9 +305,27 @@ The `home` app provides:
 
 ## 👨‍💻 Development Workflow
 
-### Using the Development Tools
+### Setup Process
 
-After running `source bin/setup`, you'll have access to:
+The development environment is initialized in two steps:
+
+1. **Source Setup Script**
+   ```bash
+   source bin/setup
+   ```
+   This makes development commands available in your shell.
+
+2. **Run Configuration**
+   ```bash
+   configure  # This command is available after running source bin/setup
+   ```
+   This sets up your development environment with all necessary dependencies and tools.
+
+   > **Note**: The `configure` command becomes available only after running `source bin/setup`
+
+### Available Commands
+
+After completing the setup, you'll have access to:
 
 1. **`run` Command**
    ```bash
@@ -313,7 +339,7 @@ After running `source bin/setup`, you'll have access to:
    ```bash
    format  # Run all formatters and linters
    ```
-   
+
    The template includes comprehensive code quality tools enforced via pre-commit hooks:
 
    **Python (Django Backend)**
